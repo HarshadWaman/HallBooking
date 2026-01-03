@@ -4,3 +4,5 @@ from django.shortcuts import render, HttpResponse
 def index(request):
     return render(request, 'index.html')
 
+def avhalls(request):
+    return render(request, 'avhalls.html')
