@@ -6,3 +6,6 @@ def index(request):
 
 def avhalls(request):
     return render(request, 'avhalls.html')
+
+def landing(request):
+    return render(request, 'landing.html')
