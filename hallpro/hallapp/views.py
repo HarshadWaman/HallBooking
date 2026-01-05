@@ -102,7 +102,7 @@ def login(request):
                 if check_password(password, admin.password):
                     request.session['admin_id'] = admin.id
                     request.session['admin_name'] = admin.name
-                    return JsonResponse({'success': True, 'message': 'Login successful!', 'redirect': '/admin/'})
+                    return JsonResponse({'success': True, 'message': 'Login successful!', 'redirect': '/admin-dashboard/'})
                 else:
                     return JsonResponse({'success': False, 'message': 'Invalid credentials'})
             except Admin.DoesNotExist:
