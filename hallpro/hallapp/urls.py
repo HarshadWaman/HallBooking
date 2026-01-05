@@ -4,7 +4,7 @@ from .import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
+    path('', views.landing, name='landing'),
     path('avhalls/', views.avhalls, name='avhalls'),
-    path('landing/', views.landing, name='landing'),
+    path('index/', views.index, name='index'),
 ]
