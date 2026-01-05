@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>हॉल बुकिंग फॉर्म - संगमनेर</title>
+    <style>
+        body {
+            font-family: 'Noto Sans Devanagari', Arial, sans-serif;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+        .header h2 {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .header h1 {
+            margin: 10px 0;
+            font-size: 22px;
+        }
+        .form-row {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .form-label {
+            min-width: 200px;
+            font-weight: 500;
+        }
+        .form-input {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-bottom: 1px solid #333;
+            font-size: 14px;
+        }
+        .date-inputs {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+        .date-inputs input {
+            width: 60px;
+            padding: 8px;
+            border: none;
+            border-bottom: 1px solid #333;
+            text-align: center;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+        .stage-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        .stage-row {
+            display: flex;
+            gap: 30px;
+            margin: 10px 0;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+        .instructions {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fffbf0;
+            border-left: 4px solid #ff9800;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+        .signature-box {
+            text-align: center;
+        }
+        .signature-line {
+            width: 200px;
+            border-bottom: 1px solid #333;
+            margin: 40px auto 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="header">
+            <h2>संगमनेर नगरपालिका करणे, द.ज.माळणपणी बाजिंग्ज आणि ब.ना.सारडा विज्ञान महाविद्यालय, संगमनेर</h2>
+            <h1>सभागृह / हॉल नोंदणी अर्ज (Hall Booking Format)</h1>
+        </div>
+
+        <form id="hallBookingForm">
+            <div class="form-row">
+                <span class="form-label">कार्यक्रमाचे नांव -</span>
+                <div class="date-inputs">
+                    <input type="text" placeholder="दि." style="width: 50px;">
+                    <span>/</span>
+                    <input type="text" placeholder="/" style="width: 50px;">
+                    <span>वार -</span>
+                    <input type="text" placeholder="वार" style="width: 100px;">
+                    <span>वेळ -</span>
+                    <input type="text" placeholder="वेळ" style="width: 100px;">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <span class="form-label">कार्यक्रम प्रमुख / समन्वयक नांव -</span>
+                <input type="text" class="form-input" placeholder="विभाग -">
+                <span style="margin: 0 10px;">मो.नं.</span>
+                <input type="text" class="form-input" style="max-width: 150px;">
+            </div>
+
+            <div class="form-row">
+                <span class="form-label">कार्यक्रम आवश्यक स्थळ -</span>
+                <input type="text" class="form-input">
+            </div>
+
+            <div class="stage-section">
+                <div class="form-row">
+                    <span class="form-label">कार्यक्रमास प्रेक्षक / सहभागींची अंदाजे संख्या -</span>
+                    <input type="number" class="form-input" style="max-width: 100px;">
+                    <span style="margin: 0 15px;">स्टेज खुर्ची संख्या - (व्हीव्हो / फायबर)</span>
+                    <input type="number" class="form-input" style="max-width: 80px;">
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="stage">
+                        <label for="stage">स्टेज छोटे / मोठे</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="mic">
+                        <label for="mic">माईक संख्या</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="speaker">
+                        <label for="speaker">लाऊड स्पीकर</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="projector">
+                        <label for="projector">एलसीडी प्रोजेक्टर</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="laptop">
+                        <label for="laptop">लॅपटॉप</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="table">
+                        <label for="table">तेल</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="chair">
+                        <label for="chair">वाती</label>
+                    </div>
+                </div>
+
+                <div class="stage-row">
+                    <span class="form-label">कार्यक्रमास लागणारे साहित्य -</span>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="agarwati">
+                        <label for="agarwati">अगरवती</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="kadipati">
+                        <label for="kadipati">काडीपाटी</label>
+                    </div>
+                </div>
+
+                <div class="stage-row">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="computer">
+                        <label for="computer">कॅम्प्युटर</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="santaji">
+                        <label for="santaji">संतजी</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="redcarpet">
+                        <label for="redcarpet">रेड कारपेट</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="mandap">
+                        <label for="mandap">मंडप</label>
+                    </div>
+                </div>
+
+                <div class="stage-row">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="saraswati">
+                        <label for="saraswati">सरस्वती</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="samrat">
+                        <label for="samrat">समर्थ</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <strong>सूचना -</strong> कार्यक्रमासाठी आवश्यक असणाऱ्या सर्व बाबींची पूर्ती करणयासाठी कार्यक्रम प्रमुख / समन्वयक यांनी कार्यक्रमाच्या एक दिवस अगोदर पूर्वसूचना द्यावयात. सूटवॉयींच्या व्यतिरिक्त हॉल उपलब्ध करणयाची जबाबदारी संस्था कार्यालयाची राहिल. प्रथम आलेल्या अर्जास प्राधान्य दिले जाईल. कार्यक्रमासाठी लागणाऱ्या सर्व बाबींचे नियोजन कार्यक्रम प्रमुख / समन्वयक यांची राहील यांची नोंद घ्यावी. (सभागृहातील नुकसानीस कार्यक्रम प्रमुख / समन्वयक जबाबदार असतील.)
+            </div>
+
+            <div class="signature-section">
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div><strong>कार्यक्रम प्रमुख</strong></div>
+                    <div>समन्वयक नांव व सही</div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <div><strong>प्राचार्य</strong></div>
+                    <div>मुख्य कार्यकारी अधिकारी,</div>
+                    <div>संस्था कार्यालय</div>
+                </div>
+            </div>
+
+            <button type="submit">सबमिट करा</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('hallBookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('फॉर्म सबमिट केला गेला!');
+        });
+    </script>
+</body>
+</html>

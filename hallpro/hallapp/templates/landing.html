@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-                        url('https://images.unsplash.com/photo-1562774053-701939374585?w=1920') center/cover no-repeat fixed;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('https://images.unsplash.com/photo-1562774053-701939374585?w=1920') center/cover no-repeat fixed;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -16,17 +17,20 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
         }
+
         .auth-container {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             max-width: 450px;
             width: 100%;
         }
+
         .tab-buttons {
             display: flex;
         }
+
         .tab-btn {
             flex: 1;
             padding: 20px;
@@ -38,37 +42,48 @@
             transition: all 0.3s;
             color: #6c757d;
         }
+
         .tab-btn.active {
             background: white;
             color: #667eea;
             border-bottom: 3px solid #667eea;
         }
+
         .tab-btn:hover {
             background: #e9ecef;
         }
+
         .form-container {
             padding: 40px;
         }
+
         .form-content {
             display: none;
         }
+
         .form-content.active {
             display: block;
         }
+
         .form-label {
             font-weight: 600;
             color: #495057;
             margin-bottom: 8px;
         }
-        .form-control, .form-select {
+
+        .form-control,
+        .form-select {
             border-radius: 8px;
             padding: 12px;
             border: 1px solid #dee2e6;
         }
-        .form-control:focus, .form-select:focus {
+
+        .form-control:focus,
+        .form-select:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
+
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
@@ -79,14 +94,17 @@
             margin-top: 20px;
             transition: transform 0.2s;
         }
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
+
         .alert {
             border-radius: 8px;
             margin-bottom: 20px;
         }
+
         .user-type-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -95,26 +113,29 @@
             font-weight: 600;
             margin-left: 8px;
         }
+
         .badge-admin {
             background: #dc3545;
             color: white;
         }
+
         .badge-user {
             background: #28a745;
             color: white;
         }
     </style>
 </head>
+
 <body>
     <div class="auth-container">
         <div class="tab-buttons">
             <button class="tab-btn active" id="login-tab-btn" onclick="switchTab('login')">Login</button>
             <button class="tab-btn" id="register-tab-btn" onclick="switchTab('register')">Register</button>
         </div>
-        
+
         <div class="form-container">
             <div id="message"></div>
-            
+
             <!-- Login Form -->
             <div id="login-form" class="form-content active">
                 <h3 class="mb-4 text-center">Welcome Back!</h3>
@@ -129,16 +150,18 @@
                     </div>
                     <div class="mb-3">
                         <label for="login-email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="login-email" placeholder="Enter your email" required>
+                        <input type="email" class="form-control" id="login-email" placeholder="Enter your email"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label for="login-password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="login-password" placeholder="Enter your password" required>
+                        <input type="password" class="form-control" id="login-password"
+                            placeholder="Enter your password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Login</button>
                 </form>
             </div>
-            
+
             <!-- Register Form -->
             <div id="register-form" class="form-content">
                 <h3 class="mb-4 text-center">Create Account</h3>
@@ -153,19 +176,23 @@
                     </div>
                     <div class="mb-3">
                         <label for="register-name" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="register-name" placeholder="Enter your name" required>
+                        <input type="text" class="form-control" id="register-name" placeholder="Enter your name"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label for="register-email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="register-email" placeholder="Enter your email" required>
+                        <input type="email" class="form-control" id="register-email" placeholder="Enter your email"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label for="register-password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="register-password" placeholder="Create a password" minlength="6" required>
+                        <input type="password" class="form-control" id="register-password"
+                            placeholder="Create a password" minlength="6" required>
                     </div>
                     <div class="mb-3">
                         <label for="register-confirm" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="register-confirm" placeholder="Confirm your password" minlength="6" required>
+                        <input type="password" class="form-control" id="register-confirm"
+                            placeholder="Confirm your password" minlength="6" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Register</button>
                 </form>
@@ -175,6 +202,22 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
+        // CSRF Token helper
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
         // User data storage - separate for admin and user
         // Note: In a real app, this would be handled by a backend database
         const users = {
@@ -187,10 +230,10 @@
             const registerForm = document.getElementById('register-form');
             const loginTab = document.getElementById('login-tab-btn');
             const registerTab = document.getElementById('register-tab-btn');
-            
+
             loginTab.classList.remove('active');
             registerTab.classList.remove('active');
-            
+
             if (tab === 'login') {
                 loginForm.classList.add('active');
                 registerForm.classList.remove('active');
@@ -200,7 +243,7 @@
                 loginForm.classList.remove('active');
                 registerTab.classList.add('active');
             }
-            
+
             document.getElementById('message').innerHTML = '';
         }
 
@@ -215,67 +258,94 @@
 
         function handleLogin(e) {
             e.preventDefault();
-            
+
             const userType = document.getElementById('login-usertype').value;
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            
+
             if (!userType) {
                 showMessage('Please select a user type.', 'warning');
                 return;
             }
-            
-            if (users[userType][email] && users[userType][email].password === password) {
-                const userName = users[userType][email].name;
-                showMessage(`Login successful! Welcome back, ${userName}!`, 'success');
-                
-                // Simulated redirection
-                setTimeout(() => {
-                    console.log(`Redirecting to ${userType} dashboard...`);
-                    // window.location.href = userType === 'admin' ? 'admin.html' : 'index.html';
-                }, 1500);
-            } else {
-                showMessage('Invalid credentials. Please check your user type, email, and password.', 'danger');
-            }
+
+            fetch('/api/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    userType: userType,
+                    email: email,
+                    password: password
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(`Login successful! Redirecting...`, 'success');
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 1500);
+                    } else {
+                        showMessage(data.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    showMessage('An error occurred. Please try again.', 'danger');
+                    console.error('Error:', error);
+                });
         }
 
         function handleRegister(e) {
             e.preventDefault();
-            
+
             const userType = document.getElementById('register-usertype').value;
             const name = document.getElementById('register-name').value;
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const confirm = document.getElementById('register-confirm').value;
-            
+
             if (!userType) {
                 showMessage('Please select a user type.', 'warning');
                 return;
             }
-            
-            // Check if email exists in either admin or user database
-            if (users.admin[email] || users.user[email]) {
-                showMessage('Email already registered. Please login instead.', 'warning');
-                return;
-            }
-            
+
             if (password !== confirm) {
                 showMessage('Passwords do not match. Please try again.', 'danger');
                 return;
             }
-            
-            // Store user data locally
-            users[userType][email] = { name, password };
-            
-            const userTypeBadge = userType === 'admin' ? 
-                '<span class="user-type-badge badge-admin">ADMIN</span>' : 
-                '<span class="user-type-badge badge-user">USER</span>';
-            
-            showMessage(`Registration successful as ${userType.toUpperCase()}! You can now login. ${userTypeBadge}`, 'success');
-            e.target.reset();
-            
-            setTimeout(() => switchTab('login'), 2000);
+
+            fetch('/api/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    userType: userType,
+                    name: name,
+                    email: email,
+                    password: password,
+                    confirm: confirm
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.message + ' <span class="user-type-badge ' + (userType === 'admin' ? 'badge-admin' : 'badge-user') + '">' + userType.toUpperCase() + '</span>', 'success');
+                        e.target.reset();
+                        setTimeout(() => switchTab('login'), 2000);
+                    } else {
+                        showMessage(data.message, 'warning');
+                    }
+                })
+                .catch(error => {
+                    showMessage('An error occurred. Please try again.', 'danger');
+                    console.error('Error:', error);
+                });
         }
     </script>
 </body>
+
 </html>
