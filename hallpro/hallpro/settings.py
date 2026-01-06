@@ -83,10 +83,13 @@ DEFAULT_DATABASE_URL = (
     "postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking"
 )
 
-# When deployed on Render we want SSL, otherwise allow non-SSL for local testing.
-ssl_require = 'RENDER' in os.environ
+DATABASES["default"] = dj_database_url.parse(DEFAULT_DATABASE_URL, conn_max_age=600)
 
-DATABASES["default"] = dj_database_url.parse(DEFAULT_DATABASE_URL, conn_max_age=600, ssl_require=ssl_require)
+# On Render, enforce SSL connections
+if 'RENDER' in os.environ:
+    DATABASES["default"]["OPTIONS"] = {
+        "sslmode": "require",
+    }
 
 
 
