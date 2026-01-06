@@ -1,274 +1,366 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>हॉल बुकिंग फॉर्म - संगमनेर</title>
+    <title>Hall Booking Form | Professional</title>
+    {% load static %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body {
-            font-family: 'Noto Sans Devanagari', Arial, sans-serif;
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+        :root {
+            --primary-color: #2563eb;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         }
-        .form-container {
-            background-color: white;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+        body { 
+            background: var(--bg-gradient); 
+            font-family: 'Poppins', sans-serif; 
+            padding: 40px 10px;
+            min-height: 100vh;
         }
-        .header {
+
+        .form-container { 
+            max-width: 950px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        /* Centered Header */
+        .header-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid #f1f5f9;
             padding-bottom: 20px;
         }
-        .header h2 {
-            margin: 10px 0;
-            font-size: 18px;
+        
+        .college-logo { 
+            max-height: 110px; 
+            margin-bottom: 15px;
         }
-        .header h1 {
-            margin: 10px 0;
-            font-size: 22px;
+        
+        #college-name { 
+            font-weight: 700; 
+            color: #1e293b;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
         }
-        .form-row {
-            margin-bottom: 20px;
+
+        .form-title { 
+            background: #eff6ff;
+            color: var(--primary-color);
+            padding: 5px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-block;
+            border: 1px solid #dbeafe;
+        }
+
+        /* Styling Inputs */
+        .section-header {
+            font-weight: 600;
+            color: #475569;
+            margin: 25px 0 15px 0;
             display: flex;
             align-items: center;
-        }
-        .form-label {
-            min-width: 200px;
-            font-weight: 500;
-        }
-        .form-input {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-bottom: 1px solid #333;
-            font-size: 14px;
-        }
-        .date-inputs {
-            display: flex;
             gap: 10px;
-            flex: 1;
         }
-        .date-inputs input {
-            width: 60px;
-            padding: 8px;
-            border: none;
-            border-bottom: 1px solid #333;
-            text-align: center;
+        .section-header::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; }
+
+        .modern-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            transition: all 0.2s;
+            outline: none;
+            background: #fff;
         }
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 20px 0;
+        .modern-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Checkbox Area */
+        .checkbox-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); 
+            gap: 12px; 
+            background: #f8fafc;
             padding: 20px;
-            border: 1px solid #ccc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
         }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+
+        /* Full Note Box */
+        .note-box { 
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-left: 5px solid #f59e0b;
+            padding: 20px; 
+            font-size: 14px; 
+            border-radius: 8px;
+            margin: 30px 0;
+            line-height: 1.7;
+            color: #92400e;
+            text-align: justify;
         }
-        .checkbox-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-        }
-        .stage-section {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #f9f9f9;
-        }
-        .stage-row {
-            display: flex;
-            gap: 30px;
-            margin: 10px 0;
-        }
-        .radio-group {
-            display: flex;
-            gap: 20px;
-        }
-        .instructions {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #fffbf0;
-            border-left: 4px solid #ff9800;
-            font-size: 14px;
-            line-height: 1.8;
-        }
-        .signature-section {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
+
+        .sig-box {
+            margin-top: 50px;
             padding-top: 20px;
         }
-        .signature-box {
-            text-align: center;
-        }
-        .signature-line {
-            width: 200px;
-            border-bottom: 1px solid #333;
-            margin: 40px auto 10px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #45a049;
+
+        @media print { 
+            body { background: white; padding: 0; }
+            .form-container { box-shadow: none; border: none; width: 100%; padding: 0; }
+            .no-print { display: none !important; }
+            .modern-input { border-width: 0 0 1px 0; border-radius: 0; padding: 2px; }
+            .checkbox-grid { background: transparent; border: 1px solid #eee; }
         }
     </style>
 </head>
 <body>
+
+    <div class="container mb-3 no-print d-flex justify-content-end gap-2">
+        <select class="form-select w-auto" id="langSelector" onchange="switchLanguage()">
+            <option value="mr">मराठी (Marathi)</option>
+            <option value="en">English</option>
+        </select>
+        <button class="btn btn-dark" onclick="window.print()">Print Form</button>
+    </div>
+
     <div class="form-container">
-        <div class="header">
-            <h2>संगमनेर नगरपालिका करणे, द.ज.माळणपणी बाजिंग्ज आणि ब.ना.सारडा विज्ञान महाविद्यालय, संगमनेर</h2>
-            <h1>सभागृह / हॉल नोंदणी अर्ज (Hall Booking Format)</h1>
+        <div class="header-wrapper">
+            <img src="{% static 'sangamner.jpg' %}" alt="College Logo" class="college-logo">
+            <h5 id="college-name">संगमनेर नगरपालिका कला, दा.ज.मालपाणी वाणिज्य आणि ब.ना.सारडा विज्ञान महाविद्यालय, संगमनेर</h5>
+            <div class="form-title" id="form-title">सभागृह / हॉल नोंदणी अर्ज (Hall Booking Format)</div>
         </div>
 
-        <form id="hallBookingForm">
-            <div class="form-row">
-                <span class="form-label">कार्यक्रमाचे नांव -</span>
-                <div class="date-inputs">
-                    <input type="text" placeholder="दि." style="width: 50px;">
-                    <span>/</span>
-                    <input type="text" placeholder="/" style="width: 50px;">
-                    <span>वार -</span>
-                    <input type="text" placeholder="वार" style="width: 100px;">
-                    <span>वेळ -</span>
-                    <input type="text" placeholder="वेळ" style="width: 100px;">
+        <form id="bookingForm" method="POST" onsubmit="handleFormSubmit(event)">
+            {% csrf_token %}
+            
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="fw-bold lbl-date">दिनांक:</label>
+                    <input type="date" name="date" id="dateInput" class="modern-input" required onchange="updateDay()">
                 </div>
-            </div>
-
-            <div class="form-row">
-                <span class="form-label">कार्यक्रम प्रमुख / समन्वयक नांव -</span>
-                <input type="text" class="form-input" placeholder="विभाग -">
-                <span style="margin: 0 10px;">मो.नं.</span>
-                <input type="text" class="form-input" style="max-width: 150px;">
-            </div>
-
-            <div class="form-row">
-                <span class="form-label">कार्यक्रम आवश्यक स्थळ -</span>
-                <input type="text" class="form-input">
-            </div>
-
-            <div class="stage-section">
-                <div class="form-row">
-                    <span class="form-label">कार्यक्रमास प्रेक्षक / सहभागींची अंदाजे संख्या -</span>
-                    <input type="number" class="form-input" style="max-width: 100px;">
-                    <span style="margin: 0 15px;">स्टेज खुर्ची संख्या - (व्हीव्हो / फायबर)</span>
-                    <input type="number" class="form-input" style="max-width: 80px;">
+                <div class="col-md-4">
+                    <label class="fw-bold lbl-day">वार:</label>
+                    <select name="day" id="daySelect" class="modern-input">
+                        <option value="Monday">Monday / सोमवार</option>
+                        <option value="Tuesday">Tuesday / मंगळवार</option>
+                        <option value="Wednesday">Wednesday / बुधवार</option>
+                        <option value="Thursday">Thursday / गुरुवार</option>
+                        <option value="Friday">Friday / शुक्रवार</option>
+                        <option value="Saturday">Saturday / शनिवार</option>
+                        <option value="Sunday">Sunday / रविवार</option>
+                    </select>
                 </div>
-
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="stage">
-                        <label for="stage">स्टेज छोटे / मोठे</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="mic">
-                        <label for="mic">माईक संख्या</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="speaker">
-                        <label for="speaker">लाऊड स्पीकर</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="projector">
-                        <label for="projector">एलसीडी प्रोजेक्टर</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="laptop">
-                        <label for="laptop">लॅपटॉप</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="table">
-                        <label for="table">तेल</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="chair">
-                        <label for="chair">वाती</label>
+                <div class="col-md-4">
+                    <label class="fw-bold lbl-time">वेळ:</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input type="time" name="time_from" id="time_from" class="modern-input" required>
+                        <span class="lbl-to">ते</span>
+                        <input type="time" name="time_to" id="time_to" class="modern-input" required>
                     </div>
                 </div>
 
-                <div class="stage-row">
-                    <span class="form-label">कार्यक्रमास लागणारे साहित्य -</span>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="agarwati">
-                        <label for="agarwati">अगरवती</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="kadipati">
-                        <label for="kadipati">काडीपाटी</label>
-                    </div>
+                <div class="col-12">
+                    <label class="fw-bold lbl-event">कार्यक्रमाचे नांव:</label>
+                    <input type="text" name="event_name" class="modern-input" required>
                 </div>
 
-                <div class="stage-row">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="computer">
-                        <label for="computer">कॅम्प्युटर</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="santaji">
-                        <label for="santaji">संतजी</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="redcarpet">
-                        <label for="redcarpet">रेड कारपेट</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="mandap">
-                        <label for="mandap">मंडप</label>
-                    </div>
+                <div class="col-md-6">
+                    <label class="fw-bold lbl-dept">विभाग:</label>
+                    <input type="text" name="department" class="modern-input">
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold lbl-mob">मोबाईल नंबर:</label>
+                    <input type="tel" name="mobile" class="modern-input">
                 </div>
 
-                <div class="stage-row">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="saraswati">
-                        <label for="saraswati">सरस्वती</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="samrat">
-                        <label for="samrat">समर्थ</label>
+                <div class="col-12">
+                    <label class="fw-bold lbl-coord">कार्यक्रम प्रमुख / समन्वयक नांव :</label>
+                    <input type="text" name="coordinator" class="modern-input">
+                </div>
+
+                <div class="col-12">
+                    <label class="fw-bold lbl-venue">कार्यक्रम आवश्यक स्थळ:</label>
+                    <input type="text" name="venue" class="modern-input">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold lbl-audience">कार्यक्रमास प्रेक्षक / सहभागींची अंदाजे संख्या:</label>
+                    <input type="number" name="audience_count" class="modern-input">
+                </div>
+                <div class="col-md-6">
+                    <label class="fw-bold lbl-chairs">स्टेज खुर्ची संख्या -</label>
+                    <div class="input-group">
+                        <select name="chair_type" class="modern-input" style="width: 50%;">
+                            <option value="Wheel">व्हील (Wheel)</option>
+                            <option value="Fiber">फायबर (Fiber)</option>
+                        </select>
+                        <input type="number" name="chairs_count" class="modern-input" style="width: 50%;" placeholder="संख्या">
                     </div>
                 </div>
             </div>
 
-            <div class="instructions">
-                <strong>सूचना -</strong> कार्यक्रमासाठी आवश्यक असणाऱ्या सर्व बाबींची पूर्ती करणयासाठी कार्यक्रम प्रमुख / समन्वयक यांनी कार्यक्रमाच्या एक दिवस अगोदर पूर्वसूचना द्यावयात. सूटवॉयींच्या व्यतिरिक्त हॉल उपलब्ध करणयाची जबाबदारी संस्था कार्यालयाची राहिल. प्रथम आलेल्या अर्जास प्राधान्य दिले जाईल. कार्यक्रमासाठी लागणाऱ्या सर्व बाबींचे नियोजन कार्यक्रम प्रमुख / समन्वयक यांची राहील यांची नोंद घ्यावी. (सभागृहातील नुकसानीस कार्यक्रम प्रमुख / समन्वयक जबाबदार असतील.)
+            <div class="section-header lbl-req">साहित्य आणि सुविधा</div>
+            
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="fw-bold lbl-mic">माईक:</label>
+                    <input type="number" name="mic_count" class="modern-input" value="0">
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-bold lbl-ls">स्पीकर:</label>
+                    <input type="number" name="speaker_count" class="modern-input" value="0">
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-bold lbl-proj">प्रोजेक्टर:</label>
+                    <input type="number" name="projector_count" class="modern-input" value="0">
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-bold lbl-lap">लॅपटॉप:</label>
+                    <input type="number" name="laptop_count" class="modern-input" value="0">
+                </div>
             </div>
 
-            <div class="signature-section">
-                <div class="signature-box">
-                    <div class="signature-line"></div>
-                    <div><strong>कार्यक्रम प्रमुख</strong></div>
-                    <div>समन्वयक नांव व सही</div>
+            <div class="checkbox-grid mt-3">
+                <div class="form-check"><input type="checkbox" name="agarbatti" class="form-check-input"> <span class="lbl-agar">अगरबत्ती</span></div>
+                <div class="form-check"><input type="checkbox" name="matchbox" class="form-check-input"> <span class="lbl-match">काडीपेटी</span></div>
+                <div class="form-check"><input type="checkbox" name="oil" class="form-check-input"> <span class="lbl-oil">तेल</span></div>
+                <div class="form-check"><input type="checkbox" name="wati" class="form-check-input"> <span class="lbl-wati">वाती</span></div>
+                <div class="form-check"><input type="checkbox" name="kapur" class="form-check-input"> <span class="lbl-kapur">कापूरवडी</span></div>
+                <div class="form-check"><input type="checkbox" name="satarangi" class="form-check-input"> <span class="lbl-satarangi">सतरंजी</span></div>
+                <div class="form-check"><input type="checkbox" name="carpet" class="form-check-input"> <span class="lbl-carpet">रेड कारपेट</span></div>
+                <div class="form-check"><input type="checkbox" name="mandap" class="form-check-input"> <span class="lbl-mandap">मंडप</span></div>
+                <div class="form-check"><input type="checkbox" name="saraswati" class="form-check-input"> <span class="lbl-saraswati">सरस्वती प्रतिमा</span></div>
+                <div class="form-check"><input type="checkbox" name="samai" class="form-check-input"> <span class="lbl-samai">समाई</span></div>
+            </div>
+
+            <div class="note-box" id="note-text">
+                <strong>सूचना -</strong> कार्यक्रमासाठी आवश्यक असणाऱ्या सर्व बाबींची पूर्तता करण्यासाठी समन्वयक यांनी कार्यक्रमाच्या एक दिवस अगोदर पूर्वसूचना द्याव्यात. सुट्टीच्या दिवशी सभागृह उपलब्ध करण्याची जबाबदारी संबंधित विभागाची राहील. प्रथम आलेल्या अर्जास प्राधान्य दिले जाईल. कार्यक्रमासाठी लागणाऱ्या सर्व बाबींचे नियोजन व व्यवस्थापन करण्याची सर्वस्वी जबाबदारी कार्यक्रम प्रमुखाची राहील. <strong>सभागृहातील साहित्याच्या नुकसानीस समन्वयक जबाबदार राहतील.</strong>
+            </div>
+
+            <div class="row text-center sig-box">
+                <div class="col-6">
+                    <p>__________________________</p>
+                    <strong class="lbl-sig2">मुख्य कार्यकारी अधिकारी</strong>
                 </div>
-                <div class="signature-box">
-                    <div class="signature-line"></div>
-                    <div><strong>प्राचार्य</strong></div>
-                    <div>मुख्य कार्यकारी अधिकारी,</div>
-                    <div>संस्था कार्यालय</div>
+                <div class="col-6">
+                    <p>__________________________</p>
+                    <strong class="lbl-sig3">प्राचार्य</strong>
                 </div>
             </div>
 
-            <button type="submit">सबमिट करा</button>
+            <div class="text-center mt-4 no-print">
+                <button type="submit" class="btn btn-primary btn-lg px-5 shadow">Submit Application</button>
+            </div>
         </form>
     </div>
 
     <script>
-        document.getElementById('hallBookingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('फॉर्म सबमिट केला गेला!');
-        });
+        const translations = {
+            mr: {
+                college: "संगमनेर नगरपालिका कला, दा.ज.मालपाणी वाणिज्य आणि ब.ना.सारडा विज्ञान महाविद्यालय, संगमनेर",
+                title: "सभागृह / हॉल नोंदणी अर्ज (Hall Booking Format)",
+                date: "दिनांक:", day: "वार:", time: "वेळ:", to: "ते",
+                event: "कार्यक्रमाचे नांव:", dept: "विभाग:", mob: "मोबाईल नंबर:",
+                coord: "कार्यक्रम प्रमुख / समन्वयक नांव :", venue: "कार्यक्रम आवश्यक स्थळ:",
+                chairs: "स्टेज खुर्ची संख्या -", audience: "कार्यक्रमास प्रेक्षक / सहभागींची अंदाजे संख्या:",
+                req: "साहित्य आणि सुविधा", sig2: "मुख्य कार्यकारी अधिकारी", sig3: "प्राचार्य",
+                success_title: "यशस्वी!",
+                success_msg: "तुमचा अर्ज यशस्वीरित्या सादर केला गेला आहे.",
+                note: "<strong>सूचना -</strong> कार्यक्रमासाठी आवश्यक असणाऱ्या सर्व बाबींची पूर्तता करण्यासाठी समन्वयक यांनी कार्यक्रमाच्या एक दिवस अगोदर पूर्वसूचना द्याव्यात. सुट्टीच्या दिवशी सभागृह उपलब्ध करण्याची जबाबदारी संबंधित विभागाची राहील. प्रथम आलेल्या अर्जास प्राधान्य दिले जाईल. कार्यक्रमासाठी लागणाऱ्या सर्व बाबींचे नियोजन व व्यवस्थापन करण्याची सर्वस्वी जबाबदारी कार्यक्रम प्रमुखाची राहील. <strong>सभागृहातील साहित्याच्या नुकसानीस समन्वयक जबाबदार राहतील.</strong>"
+            },
+            en: {
+                college: "Sangamner Municipal Arts, D.J. Malpani Commerce and B.N. Sarda Science College, Sangamner",
+                title: "Hall Booking Format",
+                date: "Date:", day: "Day:", time: "Time:", to: "To",
+                event: "Event Name:", dept: "Department:", mob: "Mobile No:",
+                coord: "Program Head / Coordinator Name:", venue: "Venue Required:",
+                chairs: "Stage Chairs Count -", audience: "Estimated Participants:",
+                req: "Materials & Facilities", sig2: "Chief Executive Officer", sig3: "Principal",
+                success_title: "Submitted!",
+                success_msg: "Your application has been submitted successfully.",
+                note: "<strong>Note -</strong> To fulfill requirements, the coordinator should give prior notice one day before. On holidays, the responsibility of making the hall available lies with the concerned department. Priority to first come first serve. The complete responsibility of management shall lie with the Program Head. <strong>The coordinator will be responsible for damages.</strong>"
+            }
+        };
+
+        function updateDay() {
+            const dateVal = document.getElementById('dateInput').value;
+            if (dateVal) {
+                const date = new Date(dateVal);
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                document.getElementById('daySelect').value = days[date.getDay()];
+            }
+        }
+
+        // Added this function to handle the submission and show message
+        function handleFormSubmit(event) {
+            event.preventDefault(); // Prevents page reload for demo
+            
+            const lang = document.getElementById('langSelector').value;
+            const t = translations[lang];
+
+            // Validation: Ensure time "to" is after time "from"
+            const from = document.getElementById('time_from').value;
+            const to = document.getElementById('time_to').value;
+            if (to <= from) {
+                Swal.fire({
+                    icon: 'error',
+                    title: lang === 'mr' ? 'चूक!' : 'Oops...',
+                    text: lang === 'mr' ? 'वेळ बरोबर तपासा!' : 'End time must be after start time!'
+                });
+                return false;
+            }
+
+            // Show Success Message
+            Swal.fire({
+                title: t.success_title,
+                text: t.success_msg,
+                icon: 'success',
+                confirmButtonColor: '#2563eb',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Logic to actually submit to Django backend goes here:
+                    // document.getElementById('bookingForm').submit(); 
+                    document.getElementById('bookingForm').reset();
+                }
+            });
+        }
+
+        function switchLanguage() {
+            const lang = document.getElementById('langSelector').value;
+            const t = translations[lang];
+            document.getElementById('college-name').innerText = t.college;
+            document.getElementById('form-title').innerText = t.title;
+            document.getElementById('note-text').innerHTML = t.note;
+            document.querySelector('.lbl-date').innerText = t.date;
+            document.querySelector('.lbl-day').innerText = t.day;
+            document.querySelector('.lbl-time').innerText = t.time;
+            document.querySelector('.lbl-to').innerText = t.to;
+            document.querySelector('.lbl-event').innerText = t.event;
+            document.querySelector('.lbl-dept').innerText = t.dept;
+            document.querySelector('.lbl-mob').innerText = t.mob;
+            document.querySelector('.lbl-coord').innerText = t.coord;
+            document.querySelector('.lbl-venue').innerText = t.venue;
+            document.querySelector('.lbl-chairs').innerText = t.chairs;
+            document.querySelector('.lbl-audience').innerText = t.audience;
+            document.querySelector('.lbl-req').innerText = t.req;
+            document.querySelector('.lbl-sig2').innerText = t.sig2;
+            document.querySelector('.lbl-sig3').innerText = t.sig3;
+        }
     </script>
 </body>
 </html>
