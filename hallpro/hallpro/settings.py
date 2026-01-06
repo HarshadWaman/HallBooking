@@ -76,7 +76,17 @@ DATABASES = {
     }
 }
 
-DATABASES["default"] = dj_database_url.parse("postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking")
+# Prefer DATABASE_URL env var (e.g. set by Render). Fall back to the provided
+# Postgres URL so the project stores data in Postgres instead of SQLite.
+DEFAULT_DATABASE_URL = (
+    os.environ.get('DATABASE_URL') or
+    "postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking"
+)
+
+# When deployed on Render we want SSL, otherwise allow non-SSL for local testing.
+ssl_require = 'RENDER' in os.environ
+
+DATABASES["default"] = dj_database_url.parse(DEFAULT_DATABASE_URL, conn_max_age=600, ssl_require=ssl_require)
 
 
 
