@@ -62,18 +62,32 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hallpro.wsgi.application'
 
-# Database Configuration
-# 1. Use the DATABASE_URL environment variable if it exists
-# 2. Fall back to your current hardcoded Render URL for local development/testing
+# Database Configuration for Render
+# Priority order:
+# 1. RENDER_DATABASE_URL (Render Internal Database)
+# 2. DATABASE_URL (External Database)
+# 3. Local fallback
+
+if 'RENDER' in os.environ:
+    # Render Internal Database (if using private database)
+    if os.environ.get('RENDER_DATABASE_URL'):
+        DATABASE_URL = os.environ.get('RENDER_DATABASE_URL')
+    # External Database URL
+    elif os.environ.get('DATABASE_URL'):
+        DATABASE_URL = os.environ.get('DATABASE_URL')
+    # Fallback to default (for testing)
+    else:
+        DATABASE_URL = "postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking"
+else:
+    # Local development - use environment variable or fallback
+    DATABASE_URL = os.environ.get('DATABASE_URL', "postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking")
+
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get('DATABASE_URL') or "postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking",
-        conn_max_age=600
-    )
+    "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
 }
 
-# Enforce SSL connections when running on Render
-if 'RENDER' in os.environ:
+# Enforce SSL for external databases on Render (not needed for internal database)
+if 'RENDER' in os.environ and not os.environ.get('RENDER_DATABASE_URL'):
     DATABASES["default"]["OPTIONS"] = {
         "sslmode": "require",
     }
