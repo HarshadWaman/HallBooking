@@ -62,30 +62,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hallpro.wsgi.application'
 
-# Database Configuration for SQLite on Render
-# We use a path on a persistent disk (/var/data/) so data is not lost on restart.
-if 'RENDER' in os.environ:
-    DB_PATH = os.path.join('/var/data', 'db.sqlite3')
-else:
-    DB_PATH = BASE_DIR / 'db.sqlite3'
-
+# Database Configuration
+# 1. Use the DATABASE_URL environment variable if it exists
+# 2. Fall back to your current hardcoded Render URL for local development/testing
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_PATH,
-    }
+    "default": dj_database_url.config(
+        default=os.environ.get('DATABASE_URL') or "postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking",
+        conn_max_age=600
+    )
 }
 
-# Prefer DATABASE_URL env var (e.g. set by Render). Fall back to the provided
-# Postgres URL so the project stores data in Postgres instead of SQLite.
-DEFAULT_DATABASE_URL = (
-    os.environ.get('DATABASE_URL') or
-    "postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking"
-)
-
-DATABASES["default"] = dj_database_url.parse(DEFAULT_DATABASE_URL, conn_max_age=600)
-
-# On Render, enforce SSL connections
+# Enforce SSL connections when running on Render
 if 'RENDER' in os.environ:
     DATABASES["default"]["OPTIONS"] = {
         "sslmode": "require",
