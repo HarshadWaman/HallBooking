@@ -138,7 +138,8 @@ STATICFILES_DIRS = [
    
 ]
 
-#username:- sangamner123
 
-# email:- selokarsantosh8@gmail.com
-# pass:- 123456@Ssit*#
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://hallbooking-wqcd.onrender.com',
+]
