@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.hashers import make_password, check_password
 from .models import User, Admin
 import json
@@ -31,6 +32,7 @@ def admin_dashboard(request):
     admin = Admin.objects.get(id=request.session['admin_id'])
     return render(request, 'admin.html', {'admin': admin})
 
+@csrf_protect
 @require_http_methods(["POST"])
 def register(request):
     try:
@@ -72,6 +74,7 @@ def register(request):
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)})
 
+@csrf_protect
 @require_http_methods(["POST"])
 def login(request):
     try:
