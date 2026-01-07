@@ -62,26 +62,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hallpro.wsgi.application'
 
-# Database Configuration for SQLite on Render
-# We use a path on a persistent disk (/var/data/) so data is not lost on restart.
+# Database Configuration
 if 'RENDER' in os.environ:
-    DB_PATH = os.path.join('/var/data', 'db.sqlite3')
-else:
-    DB_PATH = BASE_DIR / 'db.sqlite3'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_PATH,
+    # Use Render's internal service URL (PostgreSQL)
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600
+        )
     }
-}
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600
-    )
-}
+else:
+    # Local development with SQLite
+    DB_PATH = BASE_DIR / 'db.sqlite3'
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': DB_PATH,
+        }
+    }
 
 
 
