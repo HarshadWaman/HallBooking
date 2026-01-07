@@ -75,8 +75,8 @@ DATABASES = {
         'NAME': DB_PATH,
     }
 }
-
-DATABASES['default'].dj_database_url.parse("postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a/hallbooking")
+database_url = os.environ.get("DATABASE_URL")
+DATABASES['default'].dj_database_url.parse(database_url)
 
 
 
