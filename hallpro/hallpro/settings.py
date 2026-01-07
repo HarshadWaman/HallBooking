@@ -62,36 +62,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'hallpro.wsgi.application'
 
-# Database Configuration for Render
-# Priority order:
-# 1. RENDER_DATABASE_URL (Render Internal Database)
-# 2. DATABASE_URL (External Database)
-# 3. Local fallback
-
+# Database Configuration for SQLite on Render
+# We use a path on a persistent disk (/var/data/) so data is not lost on restart.
 if 'RENDER' in os.environ:
-    # Render Internal Database (if using private database)
-    if os.environ.get('RENDER_DATABASE_URL'):
-        DATABASE_URL = os.environ.get('RENDER_DATABASE_URL')
-    # External Database URL
-    elif os.environ.get('DATABASE_URL'):
-        DATABASE_URL = os.environ.get('DATABASE_URL')
-    # Fallback to default (for testing)
-    else:
-        DATABASE_URL = "postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking"
+    DB_PATH = os.path.join('/var/data', 'db.sqlite3')
 else:
-    # Local development - use environment variable or fallback
-    DATABASE_URL = os.environ.get('DATABASE_URL', "postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a.singapore-postgres.render.com/hallbooking")
+    DB_PATH = BASE_DIR / 'db.sqlite3'
 
 DATABASES = {
-    "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': DB_PATH,
+    }
 }
 
-# Enforce SSL for external databases on Render (not needed for internal database)
-if 'RENDER' in os.environ and not os.environ.get('RENDER_DATABASE_URL'):
-    DATABASES["default"]["OPTIONS"] = {
-        "sslmode": "require",
-    }
-
+DATABASES['default'].dj_database_url.parse("postgresql://hallbooking_user:9b9HNgSHXrZdUt8wZtLXC2oRHgvvYoru@dpg-d5ecltali9vc73de8l9g-a/hallbooking")
 
 
 
