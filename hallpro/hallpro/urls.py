@@ -22,6 +22,5 @@ admin.site.index_title = "Hallbooking"
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include('hallapp.urls')),
 ]

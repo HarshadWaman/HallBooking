@@ -142,14 +142,7 @@
             <div id="login-form" class="form-content active">
                 <h3 class="mb-4 text-center">Welcome Back!</h3>
                 <form onsubmit="handleLogin(event)">
-                    <div class="mb-3">
-                        <label for="login-usertype" class="form-label">Login As</label>
-                        <select class="form-select" id="login-usertype" required>
-                            <option value="">Select User Type</option>
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
+                    <input type="hidden" id="login-usertype" value="user">
                     <div class="mb-3">
                         <label for="login-email" class="form-label">Email Address</label>
                         <input type="email" class="form-control" id="login-email" placeholder="Enter your email"
@@ -168,14 +161,7 @@
             <div id="register-form" class="form-content">
                 <h3 class="mb-4 text-center">Create Account</h3>
                 <form onsubmit="handleRegister(event)">
-                    <div class="mb-3">
-                        <label for="register-usertype" class="form-label">Register As</label>
-                        <select class="form-select" id="register-usertype" required>
-                            <option value="">Select User Type</option>
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
+                    <input type="hidden" id="register-usertype" value="user">
                     <div class="mb-3">
                         <label for="register-name" class="form-label">Full Name</label>
                         <input type="text" class="form-control" id="register-name" placeholder="Enter your name"
@@ -265,11 +251,6 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
-            if (!userType) {
-                showMessage('Please select a user type.', 'warning');
-                return;
-            }
-
             fetch('/api/login/', {
                 method: 'POST',
                 headers: {
@@ -307,11 +288,6 @@
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const confirm = document.getElementById('register-confirm').value;
-
-            if (!userType) {
-                showMessage('Please select a user type.', 'warning');
-                return;
-            }
 
             if (password !== confirm) {
                 showMessage('Passwords do not match. Please try again.', 'danger');

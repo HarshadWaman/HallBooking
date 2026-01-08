@@ -31,6 +31,8 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(" ") if os.environ.ge
 
 # Application definition
 
+AUTH_USER_MODEL = 'hallapp.User'
+
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
