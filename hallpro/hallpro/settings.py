@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'hallapp',
+    
 ]
 
 MIDDLEWARE = [
@@ -149,12 +150,17 @@ STATICFILES_DIRS = [
 
 
 # CSRF and Security Settings
-CSRF_TRUSTED_ORIGINS = [
-    'https://hallbooking-wqcd.onrender.com',
-]
+CSRF_TRUSTED_ORIGINS = ['https://hallbooking-wqcd.onrender.com',]
 
 # HTTPS Settings for Production (Render)
+<<<<<<< HEAD
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
+=======
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#SECURE_SSL_REDIRECT = True
+#SESSION_COOKIE_SECURE = True
+#CSRF_COOKIE_SECURE = True
+>>>>>>> e2e76261640a8d6a338695e84a847822349fe097
