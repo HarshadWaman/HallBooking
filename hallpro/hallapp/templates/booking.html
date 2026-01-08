@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hall Booking Form | Professional</title>
+    
     {% load static %}
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         :root {
             --primary-color: #2563eb;
@@ -30,7 +33,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
-        /* Centered Header */
         .header-wrapper {
             display: flex;
             flex-direction: column;
@@ -44,6 +46,7 @@
         .college-logo { 
             max-height: 110px; 
             margin-bottom: 15px;
+            width: auto;
         }
         
         #college-name { 
@@ -63,7 +66,6 @@
             border: 1px solid #dbeafe;
         }
 
-        /* Styling Inputs */
         .section-header {
             font-weight: 600;
             color: #475569;
@@ -88,7 +90,6 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        /* Checkbox Area */
         .checkbox-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); 
@@ -99,7 +100,6 @@
             border: 1px solid #e2e8f0;
         }
 
-        /* Full Note Box */
         .note-box { 
             background: #fffbeb;
             border: 1px solid #fef3c7;
@@ -139,9 +139,9 @@
 
     <div class="form-container">
         <div class="header-wrapper">
-            <img src="{% static 'sangamner.jpg' %}" alt="College Logo" class="college-logo">
+            <img src="{% static 'images/sangamner.jpg' %}" alt="College Logo" class="college-logo">
             <h5 id="college-name">संगमनेर नगरपालिका कला, दा.ज.मालपाणी वाणिज्य आणि ब.ना.सारडा विज्ञान महाविद्यालय, संगमनेर</h5>
-            <div class="form-title" id="form-title">सभागृह / हॉल नोंदणी अर्ज (Hall Booking Format)</div>
+            <div class="form-title" id="form-title">सभागृह / हॉल नोंदणी अर्ज (Hall Booking Form)</div>
         </div>
 
         <form id="bookingForm" method="POST" onsubmit="handleFormSubmit(event)">
@@ -155,14 +155,7 @@
                 <div class="col-md-4">
                     <label class="fw-bold lbl-day">वार:</label>
                     <select name="day" id="daySelect" class="modern-input">
-                        <option value="Monday">Monday / सोमवार</option>
-                        <option value="Tuesday">Tuesday / मंगळवार</option>
-                        <option value="Wednesday">Wednesday / बुधवार</option>
-                        <option value="Thursday">Thursday / गुरुवार</option>
-                        <option value="Friday">Friday / शुक्रवार</option>
-                        <option value="Saturday">Saturday / शनिवार</option>
-                        <option value="Sunday">Sunday / रविवार</option>
-                    </select>
+                        </select>
                 </div>
                 <div class="col-md-4">
                     <label class="fw-bold lbl-time">वेळ:</label>
@@ -192,23 +185,30 @@
                     <input type="text" name="coordinator" class="modern-input">
                 </div>
 
-                <div class="col-12">
+                <div class="col-md-6">
                     <label class="fw-bold lbl-venue">कार्यक्रम आवश्यक स्थळ:</label>
-                    <input type="text" name="venue" class="modern-input">
+                    <select name="venue" id="venueSelect" class="modern-input">
+                        </select>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="fw-bold lbl-audience">कार्यक्रमास प्रेक्षक / सहभागींची अंदाजे संख्या:</label>
+                    <label class="fw-bold lbl-stage">स्टेज आकार:</label>
+                    <select name="stage_size" id="stageSelect" class="modern-input">
+                        </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold lbl-audience">कार्यक्रमास प्रेक्षक संख्या:</label>
                     <input type="number" name="audience_count" class="modern-input">
                 </div>
                 <div class="col-md-6">
                     <label class="fw-bold lbl-chairs">स्टेज खुर्ची संख्या -</label>
                     <div class="input-group">
-                        <select name="chair_type" class="modern-input" style="width: 50%;">
-                            <option value="Wheel">व्हील (Wheel)</option>
-                            <option value="Fiber">फायबर (Fiber)</option>
+                        <select name="chair_type" id="chairType" class="modern-input" style="width: 50%;">
+                            <option value="Wheel" id="optWheel">व्हील (Wheel)</option>
+                            <option value="Fiber" id="optFiber">फायबर (Fiber)</option>
                         </select>
-                        <input type="number" name="chairs_count" class="modern-input" style="width: 50%;" placeholder="संख्या">
+                        <input type="number" name="chairs_count" id="chairCount" class="modern-input" style="width: 50%;" placeholder="संख्या">
                     </div>
                 </div>
             </div>
@@ -221,11 +221,11 @@
                     <input type="number" name="mic_count" class="modern-input" value="0">
                 </div>
                 <div class="col-md-3">
-                    <label class="fw-bold lbl-ls">स्पीकर:</label>
+                    <label class="fw-bold lbl-ls">लाउड स्पीकर:</label>
                     <input type="number" name="speaker_count" class="modern-input" value="0">
                 </div>
                 <div class="col-md-3">
-                    <label class="fw-bold lbl-proj">प्रोजेक्टर:</label>
+                    <label class="fw-bold lbl-proj">LCD प्रोजेक्टर:</label>
                     <input type="number" name="projector_count" class="modern-input" value="0">
                 </div>
                 <div class="col-md-3">
@@ -247,9 +247,7 @@
                 <div class="form-check"><input type="checkbox" name="samai" class="form-check-input"> <span class="lbl-samai">समाई</span></div>
             </div>
 
-            <div class="note-box" id="note-text">
-                <strong>सूचना -</strong> कार्यक्रमासाठी आवश्यक असणाऱ्या सर्व बाबींची पूर्तता करण्यासाठी समन्वयक यांनी कार्यक्रमाच्या एक दिवस अगोदर पूर्वसूचना द्याव्यात. सुट्टीच्या दिवशी सभागृह उपलब्ध करण्याची जबाबदारी संबंधित विभागाची राहील. प्रथम आलेल्या अर्जास प्राधान्य दिले जाईल. कार्यक्रमासाठी लागणाऱ्या सर्व बाबींचे नियोजन व व्यवस्थापन करण्याची सर्वस्वी जबाबदारी कार्यक्रम प्रमुखाची राहील. <strong>सभागृहातील साहित्याच्या नुकसानीस समन्वयक जबाबदार राहतील.</strong>
-            </div>
+            <div class="note-box" id="note-text"></div>
 
             <div class="row text-center sig-box">
                 <div class="col-6">
@@ -272,95 +270,144 @@
         const translations = {
             mr: {
                 college: "संगमनेर नगरपालिका कला, दा.ज.मालपाणी वाणिज्य आणि ब.ना.सारडा विज्ञान महाविद्यालय, संगमनेर",
-                title: "सभागृह / हॉल नोंदणी अर्ज (Hall Booking Format)",
+                title: "सभागृह / हॉल नोंदणी अर्ज (Hall Booking Form)",
                 date: "दिनांक:", day: "वार:", time: "वेळ:", to: "ते",
                 event: "कार्यक्रमाचे नांव:", dept: "विभाग:", mob: "मोबाईल नंबर:",
                 coord: "कार्यक्रम प्रमुख / समन्वयक नांव :", venue: "कार्यक्रम आवश्यक स्थळ:",
-                chairs: "स्टेज खुर्ची संख्या -", audience: "कार्यक्रमास प्रेक्षक / सहभागींची अंदाजे संख्या:",
-                req: "साहित्य आणि सुविधा", sig2: "मुख्य कार्यकारी अधिकारी", sig3: "प्राचार्य",
-                success_title: "यशस्वी!",
-                success_msg: "तुमचा अर्ज यशस्वीरित्या सादर केला गेला आहे.",
-                note: "<strong>सूचना -</strong> कार्यक्रमासाठी आवश्यक असणाऱ्या सर्व बाबींची पूर्तता करण्यासाठी समन्वयक यांनी कार्यक्रमाच्या एक दिवस अगोदर पूर्वसूचना द्याव्यात. सुट्टीच्या दिवशी सभागृह उपलब्ध करण्याची जबाबदारी संबंधित विभागाची राहील. प्रथम आलेल्या अर्जास प्राधान्य दिले जाईल. कार्यक्रमासाठी लागणाऱ्या सर्व बाबींचे नियोजन व व्यवस्थापन करण्याची सर्वस्वी जबाबदारी कार्यक्रम प्रमुखाची राहील. <strong>सभागृहातील साहित्याच्या नुकसानीस समन्वयक जबाबदार राहतील.</strong>"
+                stage: "स्टेज आकार:", chairs: "स्टेज खुर्ची संख्या -", audience: "कार्यक्रमास प्रेक्षक संख्या:",
+                chair_placeholder: "संख्या",
+                days: ["रविवार", "सोमवार", "मंगळवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
+                venues: ["-- स्थळ निवडा --", "साई बाबा हॉल", "नवीन सेमिनार हॉल"],
+                stages: ["-- आकार निवडा --", "मोठा", "छोटा"],
+                opt_wheel: "व्हील", opt_fiber: "फायबर",
+                req: "साहित्य आणि सुविधा", mic: "माईक:", ls: "लाउड स्पीकर:", proj: "LCD प्रोजेक्टर:", lap: "लॅपटॉप:",
+                sig2: "मुख्य कार्यकारी अधिकारी", sig3: "प्राचार्य",
+                success_title: "यशस्वी!", success_msg: "तुमचा अर्ज यशस्वीरित्या सादर केला गेला आहे.",
+                note: "<strong>सूचना -</strong> कार्यक्रमासाठी आवश्यक असणाऱ्या सर्व बाबींची पूर्तता करण्यासाठी समन्वयक यांनी कार्यक्रमाच्या एक दिवस अगोदर पूर्वसूचना द्याव्यात. सुट्टीच्या दिवशी सभागृह उपलब्ध करण्याची जबाबदारी संबंधित विभागाची राहील. प्रथम आलेल्या अर्जास प्राधान्य दिले जाईल. कार्यक्रमासाठी लागणाऱ्या सर्व बाबींचे नियोजन व व्यवस्थापन करण्याची सर्वस्वी जबाबदारी कार्यक्रम प्रमुखाची राहील. <strong>सभागृहातील साहित्याच्या नुकसानीस समन्वयक जबाबदार राहतील.</strong>",
+                agar: "अगरबत्ती", match: "काडीपेटी", oil: "तेल", wati: "वाती", kapur: "कापूरवडी", 
+                satarangi: "सतरंजी", carpet: "रेड कारपेट", mandap: "मंडप", saraswati: "सरस्वती प्रतिमा", samai: "समाई"
             },
             en: {
                 college: "Sangamner Municipal Arts, D.J. Malpani Commerce and B.N. Sarda Science College, Sangamner",
-                title: "Hall Booking Format",
+                title: "Hall Booking Form",
                 date: "Date:", day: "Day:", time: "Time:", to: "To",
                 event: "Event Name:", dept: "Department:", mob: "Mobile No:",
                 coord: "Program Head / Coordinator Name:", venue: "Venue Required:",
-                chairs: "Stage Chairs Count -", audience: "Estimated Participants:",
-                req: "Materials & Facilities", sig2: "Chief Executive Officer", sig3: "Principal",
-                success_title: "Submitted!",
-                success_msg: "Your application has been submitted successfully.",
-                note: "<strong>Note -</strong> To fulfill requirements, the coordinator should give prior notice one day before. On holidays, the responsibility of making the hall available lies with the concerned department. Priority to first come first serve. The complete responsibility of management shall lie with the Program Head. <strong>The coordinator will be responsible for damages.</strong>"
+                stage: "Stage Size:", chairs: "Stage Chairs Count -", audience: "Estimated Participants:",
+                chair_placeholder: "Count",
+                days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                venues: ["-- Select Venue --", "Sai Baba Hall", "New Seminar Hall"],
+                stages: ["-- Select Size --", "Large", "Small"],
+                opt_wheel: "Wheel", opt_fiber: "Fiber",
+                req: "Materials & Facilities", mic: "Mic:", ls: "Loud Speaker:", proj: "LCD Projector:", lap: "Laptop:",
+                sig2: "Chief Executive Officer", sig3: "Principal",
+                success_title: "Submitted!", success_msg: "Your application has been submitted successfully.",
+                note: "<strong>Note -</strong> To fulfill requirements, the coordinator should give prior notice one day before. On holidays, the responsibility of making the hall available lies with the concerned department. Priority to first come first serve. The complete responsibility of management shall lie with the Program Head. <strong>The coordinator will be responsible for damages.</strong>",
+                agar: "Incense Sticks", match: "Matchbox", oil: "Oil", wati: "Cotton Wicks", kapur: "Camphor", 
+                satarangi: "Satarangi/Mat", carpet: "Red Carpet", mandap: "Mandap", saraswati: "Saraswati Photo", samai: "Traditional Lamp"
             }
         };
+
+        const engDayList = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
         function updateDay() {
             const dateVal = document.getElementById('dateInput').value;
             if (dateVal) {
                 const date = new Date(dateVal);
-                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                document.getElementById('daySelect').value = days[date.getDay()];
+                document.getElementById('daySelect').selectedIndex = date.getDay();
             }
-        }
-
-        // Added this function to handle the submission and show message
-        function handleFormSubmit(event) {
-            event.preventDefault(); // Prevents page reload for demo
-            
-            const lang = document.getElementById('langSelector').value;
-            const t = translations[lang];
-
-            // Validation: Ensure time "to" is after time "from"
-            const from = document.getElementById('time_from').value;
-            const to = document.getElementById('time_to').value;
-            if (to <= from) {
-                Swal.fire({
-                    icon: 'error',
-                    title: lang === 'mr' ? 'चूक!' : 'Oops...',
-                    text: lang === 'mr' ? 'वेळ बरोबर तपासा!' : 'End time must be after start time!'
-                });
-                return false;
-            }
-
-            // Show Success Message
-            Swal.fire({
-                title: t.success_title,
-                text: t.success_msg,
-                icon: 'success',
-                confirmButtonColor: '#2563eb',
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Logic to actually submit to Django backend goes here:
-                    // document.getElementById('bookingForm').submit(); 
-                    document.getElementById('bookingForm').reset();
-                }
-            });
         }
 
         function switchLanguage() {
             const lang = document.getElementById('langSelector').value;
             const t = translations[lang];
+            
             document.getElementById('college-name').innerText = t.college;
             document.getElementById('form-title').innerText = t.title;
             document.getElementById('note-text').innerHTML = t.note;
-            document.querySelector('.lbl-date').innerText = t.date;
-            document.querySelector('.lbl-day').innerText = t.day;
-            document.querySelector('.lbl-time').innerText = t.time;
-            document.querySelector('.lbl-to').innerText = t.to;
-            document.querySelector('.lbl-event').innerText = t.event;
-            document.querySelector('.lbl-dept').innerText = t.dept;
-            document.querySelector('.lbl-mob').innerText = t.mob;
-            document.querySelector('.lbl-coord').innerText = t.coord;
-            document.querySelector('.lbl-venue').innerText = t.venue;
-            document.querySelector('.lbl-chairs').innerText = t.chairs;
-            document.querySelector('.lbl-audience').innerText = t.audience;
-            document.querySelector('.lbl-req').innerText = t.req;
-            document.querySelector('.lbl-sig2').innerText = t.sig2;
-            document.querySelector('.lbl-sig3').innerText = t.sig3;
+
+            // Labels
+            const labelMap = {
+                '.lbl-date': t.date, '.lbl-day': t.day, '.lbl-time': t.time, '.lbl-to': t.to,
+                '.lbl-event': t.event, '.lbl-dept': t.dept, '.lbl-mob': t.mob, '.lbl-coord': t.coord,
+                '.lbl-venue': t.venue, '.lbl-stage': t.stage, '.lbl-chairs': t.chairs, 
+                '.lbl-audience': t.audience, '.lbl-req': t.req, '.lbl-sig2': t.sig2, '.lbl-sig3': t.sig3,
+                '.lbl-mic': t.mic, '.lbl-ls': t.ls, '.lbl-proj': t.proj, '.lbl-lap': t.lap,
+                '.lbl-agar': t.agar, '.lbl-match': t.match, '.lbl-oil': t.oil, '.lbl-wati': t.wati, 
+                '.lbl-kapur': t.kapur, '.lbl-satarangi': t.satarangi, '.lbl-carpet': t.carpet, 
+                '.lbl-mandap': t.mandap, '.lbl-saraswati': t.saraswati, '.lbl-samai': t.samai
+            };
+            Object.keys(labelMap).forEach(selector => {
+                const el = document.querySelector(selector);
+                if(el) el.innerText = labelMap[selector];
+            });
+
+            document.getElementById('chairCount').placeholder = t.chair_placeholder;
+            document.getElementById('optWheel').innerText = t.opt_wheel;
+            document.getElementById('optFiber').innerText = t.opt_fiber;
+
+            // Day Select
+            const daySelect = document.getElementById('daySelect');
+            const dIdx = daySelect.selectedIndex !== -1 ? daySelect.selectedIndex : 0;
+            daySelect.innerHTML = "";
+            t.days.forEach((d, i) => {
+                daySelect.add(new Option(d, engDayList[i]));
+            });
+            daySelect.selectedIndex = dIdx;
+
+            // Venue Select
+            const venueSelect = document.getElementById('venueSelect');
+            const vIdx = venueSelect.selectedIndex !== -1 ? venueSelect.selectedIndex : 0;
+            venueSelect.innerHTML = "";
+            t.venues.forEach((v, i) => {
+                const opt = new Option(v, i === 0 ? "" : v);
+                if(i===0) opt.disabled = true;
+                venueSelect.add(opt);
+            });
+            venueSelect.selectedIndex = vIdx;
+
+            // Stage Select
+            const stageSelect = document.getElementById('stageSelect');
+            const sIdx = stageSelect.selectedIndex !== -1 ? stageSelect.selectedIndex : 0;
+            stageSelect.innerHTML = "";
+            t.stages.forEach((s, i) => {
+                const opt = new Option(s, i === 0 ? "" : s);
+                if(i===0) opt.disabled = true;
+                stageSelect.add(opt);
+            });
+            stageSelect.selectedIndex = sIdx;
         }
+
+        function handleFormSubmit(event) {
+            event.preventDefault(); 
+            const lang = document.getElementById('langSelector').value;
+            const t = translations[lang];
+
+            const from = document.getElementById('time_from').value;
+            const to = document.getElementById('time_to').value;
+            if (to <= from) {
+                Swal.fire({
+                    icon: 'error',
+                    title: lang === 'mr' ? 'चूक!' : 'Error',
+                    text: lang === 'mr' ? 'वेळ बरोबर तपासा!' : 'End time must be after start time!'
+                });
+                return false;
+            }
+
+            Swal.fire({
+                title: t.success_title,
+                text: t.success_msg,
+                icon: 'success',
+                confirmButtonColor: '#2563eb'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('bookingForm').reset();
+                    switchLanguage(); 
+                }
+            });
+        }
+
+        window.onload = switchLanguage;
     </script>
 </body>
 </html>
