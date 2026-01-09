@@ -9,6 +9,7 @@
     {% load static %}
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -48,6 +49,8 @@
             max-height: 110px;
             margin-bottom: 15px;
             width: auto;
+            display: block !important;
+            visibility: visible !important;
         }
 
         #college-name {
@@ -124,6 +127,19 @@
         .sig-box {
             margin-top: 50px;
             padding-top: 20px;
+        }
+
+        /* Language dropdown styling */
+        #langSelector {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            color: white !important;
+            backdrop-filter: blur(10px);
+        }
+
+        #langSelector option {
+            background: #1e3c72 !important;
+            color: white !important;
         }
 
         @media print {
@@ -223,7 +239,7 @@
 
     <div class="form-container">
         <div class="header-wrapper">
-            <img src="{% static 'images/sangamner.jpg' %}" alt="College Logo" class="college-logo">
+            <img src="/static/images/sangamner.jpg" alt="College Logo" class="college-logo">
             <h5 id="college-name">संगमनेर नगरपालिका कला, दा.ज.मालपाणी वाणिज्य आणि ब.ना.सारडा विज्ञान महाविद्यालय,
                 संगमनेर</h5>
             <div class="form-title" id="form-title">सभागृह / हॉल नोंदणी अर्ज (Hall Booking Form)</div>
@@ -533,6 +549,7 @@
 
         window.onload = switchLanguage;
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
