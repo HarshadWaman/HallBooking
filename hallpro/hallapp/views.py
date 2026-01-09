@@ -9,6 +9,12 @@ from django.db.models import Q
 from django.utils import timezone
 from .models import User, Hall, Booking
 
+# Hardcoded admin credentials
+HARDCODED_ADMINS = [
+    {'username': 'harshad', 'password': '9011818144', 'email': 'harshadwaman4@gmail.com', 'name': 'Harshad'},
+    {'username': 'nayan', 'password': 'nayan2105', 'email': 'nayanpatilnp11.com', 'name': 'Nayan'},
+]
+
 # ===========================
 # Public Pages
 # ===========================
@@ -25,7 +31,8 @@ def index(request):
 def landing_page(request):
     """Renders Login/Register page"""
     if request.user.is_authenticated:
-        if request.user.user_type == 'admin':
+        # Check if it's a hardcoded admin
+        if request.session.get('is_admin') or (hasattr(request.user, 'user_type') and request.user.user_type == 'admin'):
             return redirect('admin-dashboard')
         return redirect('index')
     return render(request, 'landing.html')
@@ -39,22 +46,36 @@ def api_login(request):
         password = data.get('password')
         user_type = data.get('userType') # 'admin' or 'user'
 
-        # Since we use AbstractUser, username is required. 
-        # We assume email is unique and find the username associated with it.
+        # Check hardcoded admin credentials first
+        if user_type == 'admin':
+            for admin in HARDCODED_ADMINS:
+                if admin['email'] == email and admin['password'] == password:
+                    # Create a temporary user object for session
+                    from django.contrib.auth.models import AnonymousUser
+                    user = AnonymousUser()
+                    user.username = admin['username']
+                    user.email = admin['email']
+                    user.first_name = admin['name']
+                    user.user_type = 'admin'
+                    user.is_authenticated = True
+                    
+                    # Store admin info in session
+                    request.session['admin_user'] = admin
+                    request.session['is_admin'] = True
+                    
+                    login(request, user)
+                    return JsonResponse({'success': True, 'redirect': reverse('admin-dashboard')})
+            
+            return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
+        
+        # Handle regular user login
         try:
             user_obj = User.objects.get(email=email)
             user = authenticate(username=user_obj.username, password=password)
             
             if user is not None:
-                # Check if user type matches what they selected
-                if user.user_type != user_type:
-                     return JsonResponse({'success': False, 'message': f'Account exists but is not a {user_type} account.'})
-                
                 login(request, user)
-                
-                # Determine redirect URL
-                redirect_url = reverse('admin-dashboard') if user.user_type == 'admin' else reverse('index')
-                return JsonResponse({'success': True, 'redirect': redirect_url})
+                return JsonResponse({'success': True, 'redirect': reverse('index')})
             else:
                 return JsonResponse({'success': False, 'message': 'Invalid password.'})
         except User.DoesNotExist:
@@ -70,16 +91,14 @@ def api_register(request):
         name = data.get('name')
         email = data.get('email')
         password = data.get('password')
-        user_type = data.get('userType')
 
         if User.objects.filter(email=email).exists():
             return JsonResponse({'success': False, 'message': 'Email already registered.'})
 
-        # Create the user
+        # Create user
         # Note: We use email as username or generate a unique one if you prefer
         user = User.objects.create_user(username=email, email=email, password=password)
         user.first_name = name
-        user.user_type = user_type
         user.save()
 
         return JsonResponse({'success': True, 'message': 'Registration successful!'})
@@ -90,16 +109,41 @@ def logout_view(request):
     logout(request)
     return redirect('landing')
 
+@ensure_csrf_cookie
+def admin_login_api(request):
+    """Handle admin login via API"""
+    if request.method == "POST":
+        data = json.loads(request.body)
+        email = data.get('email')
+        password = data.get('password')
+        
+        # Check hardcoded admin credentials
+        for admin in HARDCODED_ADMINS:
+            if admin['email'] == email and admin['password'] == password:
+                # Create session for admin
+                request.session['admin_user'] = admin
+                request.session['is_admin'] = True
+                
+                return JsonResponse({'success': True, 'redirect': reverse('admin-dashboard')})
+        
+        return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
 def admin_login_view(request):
     """Renders admin login page"""
-    if request.user.is_authenticated and request.user.user_type == 'admin':
+    if request.user.is_authenticated and request.session.get('is_admin'):
         return redirect('admin-dashboard')
+    # Only allow access to admin login page if user is not authenticated
+    # or if user is authenticated but not an admin (regular user)
+    if request.user.is_authenticated and not request.session.get('is_admin'):
+        return redirect('index')
     return render(request, 'admin_login.html')
 
 @ensure_csrf_cookie
 def api_add_user(request):
     """Handle adding new user by admin"""
-    if request.user.user_type != 'admin':
+    if not request.session.get('is_admin'):
         return JsonResponse({'success': False, 'message': 'Unauthorized'})
     
     if request.method == "POST":
@@ -115,7 +159,6 @@ def api_add_user(request):
         try:
             user = User.objects.create_user(username=email, email=email, password=password)
             user.first_name = name
-            user.user_type = user_type
             user.save()
             return JsonResponse({'success': True, 'message': 'User created successfully!'})
         except Exception as e:
@@ -126,7 +169,7 @@ def api_add_user(request):
 @ensure_csrf_cookie
 def api_update_user(request, user_id):
     """Handle updating user by admin"""
-    if request.user.user_type != 'admin':
+    if not request.session.get('is_admin'):
         return JsonResponse({'success': False, 'message': 'Unauthorized'})
     
     try:
@@ -144,8 +187,6 @@ def api_update_user(request, user_id):
                 return JsonResponse({'success': False, 'message': 'Email already exists.'})
             user.email = data['email']
             user.username = data['email']
-        if 'user_type' in data:
-            user.user_type = data['user_type']
         if 'is_active' in data:
             user.is_active = data['is_active']
         
@@ -236,7 +277,7 @@ def api_booking_status(request, booking_id):
 @ensure_csrf_cookie
 def api_add_hall(request):
     """Handle adding new hall by admin"""
-    if request.user.user_type != 'admin':
+    if not request.session.get('is_admin'):
         return JsonResponse({'success': False, 'message': 'Unauthorized'})
     
     if request.method == "POST":
@@ -265,7 +306,7 @@ def api_add_hall(request):
 @ensure_csrf_cookie
 def api_delete_booking(request, booking_id):
     """Handle permanent booking deletion by admin"""
-    if request.user.user_type != 'admin':
+    if not request.session.get('is_admin'):
         return JsonResponse({'success': False, 'message': 'Unauthorized'})
     
     try:
@@ -280,7 +321,7 @@ def api_delete_booking(request, booking_id):
 @ensure_csrf_cookie
 def api_booking_details(request, booking_id):
     """Handle booking details retrieval by admin"""
-    if request.user.user_type != 'admin':
+    if not request.session.get('is_admin'):
         return JsonResponse({'success': False, 'message': 'Unauthorized'})
     
     try:
@@ -306,7 +347,7 @@ def api_booking_details(request, booking_id):
 @ensure_csrf_cookie
 def api_update_booking_status(request, booking_id):
     """Handle booking approval/rejection by admin"""
-    if request.user.user_type != 'admin':
+    if not request.session.get('is_admin'):
         return JsonResponse({'success': False, 'message': 'Unauthorized'})
     
     try:
@@ -321,10 +362,8 @@ def api_update_booking_status(request, booking_id):
         if status in ['APPROVED', 'REJECTED']:
             booking.status = status
             if status == 'APPROVED':
-                booking.approved_by = request.user
                 booking.approved_at = timezone.now()
             elif status == 'REJECTED':
-                booking.rejected_by = request.user
                 booking.rejected_at = timezone.now()
                 booking.rejection_reason = data.get('reason', '')
             booking.save()
@@ -407,14 +446,18 @@ def my_bookings(request):
 # Admin Dashboard
 # ===========================
 
-@login_required
 def admin_dashboard(request):
     # Security check: Ensure only admins can access
-    if request.user.user_type != 'admin':
-        return redirect('index')
+    if not request.session.get('is_admin'):
+        return redirect('admin-login-view')
 
+    # Get admin info from session
+    admin_info = request.session.get('admin_user', {})
+    admin_name = admin_info.get('name', 'Admin')
+    
     context = {
-        'admin': request.user,
+        'admin': admin_info,
+        'admin_name': admin_name,
         'total_halls': Hall.objects.count(),
         'total_bookings': Booking.objects.count(),
         'pending_bookings': Booking.objects.filter(status='PENDING').count(),

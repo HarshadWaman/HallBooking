@@ -5,16 +5,11 @@ from django.utils.translation import gettext_lazy as _
 # 1. Custom User Model
 # Matches login/register logic in 'landing.html' and user management in 'admin.html'
 class User(AbstractUser):
-    USER_TYPE_CHOICES = (
-        ('admin', 'Admin'),
-        ('user', 'User'),
-    )
-    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='user')
     department = models.CharField(max_length=100, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.username} ({self.get_user_type_display()})"
+        return f"{self.username}"
 
 # 2. Hall Model
 # Stores data for halls shown in 'index.html' and managed in 'admin.html'
