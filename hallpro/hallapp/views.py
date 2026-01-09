@@ -12,7 +12,7 @@ from .models import User, Hall, Booking
 # Hardcoded admin credentials
 HARDCODED_ADMINS = [
     {'username': 'harshad', 'password': '9011818144', 'email': 'harshadwaman4@gmail.com', 'name': 'Harshad'},
-    {'username': 'nayan', 'password': 'nayan2105', 'email': 'nayanpatilnp11.com', 'name': 'Nayan'},
+    {'username': 'nayan', 'password': 'nayan2105', 'email': 'nayanpatilnp11@gmail.com', 'name': 'Nayan'},
 ]
 
 # ===========================

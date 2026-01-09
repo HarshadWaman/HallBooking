@@ -71,8 +71,8 @@ def create_default_admins():
             'user_type': 'admin'
         },
         {
-            'username': 'nayanpatilnp11.com',
-            'email': 'nayanpatilnp11.com', 
+            'username': 'nayanpatilnp11@gmail.com',
+            'email': 'nayanpatilnp11@gmail.com', 
             'password': 'nayan2105',
             'first_name': 'Nayan',
             'user_type': 'admin'
