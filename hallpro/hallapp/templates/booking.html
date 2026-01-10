@@ -129,7 +129,6 @@
             padding-top: 20px;
         }
 
-        /* Language dropdown styling */
         #langSelector {
             background: rgba(255, 255, 255, 0.2) !important;
             border: 1px solid rgba(255, 255, 255, 0.5) !important;
@@ -143,94 +142,47 @@
         }
 
         @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-
-            .form-container {
-                box-shadow: none;
-                border: none;
-                width: 100%;
-                padding: 0;
-            }
-
-            .no-print {
-                display: none !important;
-            }
-
-            .modern-input {
-                border-width: 0 0 1px 0;
-                border-radius: 0;
-                padding: 2px;
-            }
-
-            .checkbox-grid {
-                background: transparent;
-                border: 1px solid #eee;
-            }
+            body { background: white; padding: 0; }
+            .form-container { box-shadow: none; border: none; width: 100%; padding: 0; }
+            .no-print { display: none !important; }
+            .modern-input { border-width: 0 0 1px 0; border-radius: 0; padding: 2px; }
+            .checkbox-grid { background: transparent; border: 1px solid #eee; }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark"
-        style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%) !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%) !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'index' %}"
-                style="color: white !important; font-weight: bold; font-size: 1.5rem;">🎓 Sangamner College</a>
+            <a class="navbar-brand" href="{% url 'index' %}" style="color: white !important; font-weight: bold; font-size: 1.5rem;">🎓 Sangamner College</a>
             <div class="ms-auto d-flex align-items-center gap-3">
-                <!-- Language Selector -->
-                <select class="form-select w-auto" id="langSelector" onchange="switchLanguage()"
-                    style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                <select class="form-select w-auto" id="langSelector" onchange="switchLanguage()">
                     <option value="mr">मराठी (Marathi)</option>
                     <option value="en">English</option>
                 </select>
 
                 {% if user.is_authenticated %}
-                <!-- Profile Dropdown -->
                 <div class="dropdown">
-                    <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="profileDropdown"
-                        data-bs-toggle="dropdown" aria-expanded="false"
-                        style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                    <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="profileDropdown" data-bs-toggle="dropdown" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white;">
                         <i class="fas fa-user-circle me-2"></i>
                         <span>{{ user.get_full_name|default:user.username }}</span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li>
-                            <h6 class="dropdown-header">{{ user.get_full_name|default:user.username }}</h6>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="{% url 'index' %}"><i class="fas fa-home me-2"></i>Home</a>
-                        </li>
-                        <li><a class="dropdown-item" href="{% url 'mybooking' %}"><i class="fas fa-calendar me-2"></i>My
-                                Bookings</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'index' %}"><i class="fas fa-home me-2"></i>Home</a></li>
+                        <li><a class="dropdown-item" href="{% url 'mybooking' %}"><i class="fas fa-calendar me-2"></i>My Bookings</a></li>
                         {% if user.user_type == 'admin' %}
-                        <li><a class="dropdown-item" href="{% url 'admin-dashboard' %}"><i
-                                    class="fas fa-cog me-2"></i>Admin Dashboard</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin-dashboard' %}"><i class="fas fa-cog me-2"></i>Admin Dashboard</a></li>
                         {% endif %}
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i
-                                    class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
                 </div>
                 {% else %}
-                <!-- Login Button -->
-                <a class="btn btn-outline-light btn-sm" href="{% url 'landing' %}"
-                    style="border: 1px solid rgba(255,255,255,0.5);">
-                    <i class="fas fa-sign-in-alt me-2"></i>Login
-                </a>
+                <a class="btn btn-outline-light btn-sm" href="{% url 'landing' %}"><i class="fas fa-sign-in-alt me-2"></i>Login</a>
                 {% endif %}
 
-                <!-- Print Button -->
-                <button class="btn btn-dark" onclick="window.print()"
-                    style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.3);">
+                <button class="btn btn-dark" onclick="window.print()" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.3);">
                     <i class="fas fa-print me-2"></i>Print
                 </button>
             </div>
@@ -240,8 +192,7 @@
     <div class="form-container">
         <div class="header-wrapper">
             <img src="/static/images/sangamner.jpg" alt="College Logo" class="college-logo">
-            <h5 id="college-name">संगमनेर नगरपालिका कला, दा.ज.मालपाणी वाणिज्य आणि ब.ना.सारडा विज्ञान महाविद्यालय,
-                संगमनेर</h5>
+            <h5 id="college-name">संगमनेर नगरपालिका कला, दा.ज.मालपाणी वाणिज्य आणि ब.ना.सारडा विज्ञान महाविद्यालय, संगमनेर</h5>
             <div class="form-title" id="form-title">सभागृह / हॉल नोंदणी अर्ज (Hall Booking Form)</div>
         </div>
 
@@ -255,8 +206,7 @@
                 </div>
                 <div class="col-md-4">
                     <label class="fw-bold lbl-day">वार:</label>
-                    <select name="day" id="daySelect" class="modern-input">
-                    </select>
+                    <select name="day" id="daySelect" class="modern-input"></select>
                 </div>
                 <div class="col-md-4">
                     <label class="fw-bold lbl-time">वेळ:</label>
@@ -288,18 +238,17 @@
 
                 <div class="col-md-6">
                     <label class="fw-bold lbl-venue">कार्यक्रम आवश्यक स्थळ:</label>
-                    <!-- Venue Select -->
                     <select name="venue" id="venueSelect" class="modern-input">
+                        <option value="" disabled selected id="venuePlaceholder">-- स्थळ निवडा --</option>
                         {% for hall in halls %}
-                        <option value="{{ hall.id }}">{{ hall.name|escapejs }}</option>
+                        <option value="{{ hall.id }}">{{ hall.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="col-md-6">
                     <label class="fw-bold lbl-stage">स्टेज आकार:</label>
-                    <select name="stage_size" id="stageSelect" class="modern-input">
-                    </select>
+                    <select name="stage_size" id="stageSelect" class="modern-input"></select>
                 </div>
 
                 <div class="col-md-6">
@@ -313,8 +262,7 @@
                             <option value="Wheel" id="optWheel">व्हील (Wheel)</option>
                             <option value="Fiber" id="optFiber">फायबर (Fiber)</option>
                         </select>
-                        <input type="number" name="chairs_count" id="chairCount" class="modern-input"
-                            style="width: 50%;" placeholder="संख्या">
+                        <input type="number" name="chairs_count" id="chairCount" class="modern-input" style="width: 50%;" placeholder="संख्या">
                     </div>
                 </div>
             </div>
@@ -341,26 +289,16 @@
             </div>
 
             <div class="checkbox-grid mt-3">
-                <div class="form-check"><input type="checkbox" name="agarbatti" class="form-check-input"> <span
-                        class="lbl-agar">अगरबत्ती</span></div>
-                <div class="form-check"><input type="checkbox" name="matchbox" class="form-check-input"> <span
-                        class="lbl-match">काडीपेटी</span></div>
-                <div class="form-check"><input type="checkbox" name="oil" class="form-check-input"> <span
-                        class="lbl-oil">तेल</span></div>
-                <div class="form-check"><input type="checkbox" name="wati" class="form-check-input"> <span
-                        class="lbl-wati">वाती</span></div>
-                <div class="form-check"><input type="checkbox" name="kapur" class="form-check-input"> <span
-                        class="lbl-kapur">कापूरवडी</span></div>
-                <div class="form-check"><input type="checkbox" name="satarangi" class="form-check-input"> <span
-                        class="lbl-satarangi">सतरंजी</span></div>
-                <div class="form-check"><input type="checkbox" name="carpet" class="form-check-input"> <span
-                        class="lbl-carpet">रेड कारपेट</span></div>
-                <div class="form-check"><input type="checkbox" name="mandap" class="form-check-input"> <span
-                        class="lbl-mandap">मंडप</span></div>
-                <div class="form-check"><input type="checkbox" name="saraswati" class="form-check-input"> <span
-                        class="lbl-saraswati">सरस्वती प्रतिमा</span></div>
-                <div class="form-check"><input type="checkbox" name="samai" class="form-check-input"> <span
-                        class="lbl-samai">समाई</span></div>
+                <div class="form-check"><input type="checkbox" name="agarbatti" class="form-check-input"> <span class="lbl-agar">अगरबत्ती</span></div>
+                <div class="form-check"><input type="checkbox" name="matchbox" class="form-check-input"> <span class="lbl-match">काडीपेटी</span></div>
+                <div class="form-check"><input type="checkbox" name="oil" class="form-check-input"> <span class="lbl-oil">तेल</span></div>
+                <div class="form-check"><input type="checkbox" name="wati" class="form-check-input"> <span class="lbl-wati">वाती</span></div>
+                <div class="form-check"><input type="checkbox" name="kapur" class="form-check-input"> <span class="lbl-kapur">कापूरवडी</span></div>
+                <div class="form-check"><input type="checkbox" name="satarangi" class="form-check-input"> <span class="lbl-satarangi">सतरंजी</span></div>
+                <div class="form-check"><input type="checkbox" name="carpet" class="form-check-input"> <span class="lbl-carpet">रेड कारपेट</span></div>
+                <div class="form-check"><input type="checkbox" name="mandap" class="form-check-input"> <span class="lbl-mandap">मंडप</span></div>
+                <div class="form-check"><input type="checkbox" name="saraswati" class="form-check-input"> <span class="lbl-saraswati">सरस्वती प्रतिमा</span></div>
+                <div class="form-check"><input type="checkbox" name="samai" class="form-check-input"> <span class="lbl-samai">समाई</span></div>
             </div>
 
             <div class="note-box" id="note-text"></div>
@@ -390,10 +328,10 @@
                 date: "दिनांक:", day: "वार:", time: "वेळ:", to: "ते",
                 event: "कार्यक्रमाचे नांव:", dept: "विभाग:", mob: "मोबाईल नंबर:",
                 coord: "कार्यक्रम प्रमुख / समन्वयक नांव :", venue: "कार्यक्रम आवश्यक स्थळ:",
+                venuePlaceholder: "-- स्थळ निवडा --",
                 stage: "स्टेज आकार:", chairs: "स्टेज खुर्ची संख्या -", audience: "कार्यक्रमास प्रेक्षक संख्या:",
                 chair_placeholder: "संख्या",
                 days: ["रविवार", "सोमवार", "मंगळवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
-                venues: ["-- स्थळ निवडा --", "साई बाबा हॉल", "नवीन सेमिनार हॉल"],
                 stages: ["-- आकार निवडा --", "मोठा", "छोटा"],
                 opt_wheel: "व्हील", opt_fiber: "फायबर",
                 req: "साहित्य आणि सुविधा", mic: "माईक:", ls: "लाउड स्पीकर:", proj: "LCD प्रोजेक्टर:", lap: "लॅपटॉप:",
@@ -401,7 +339,12 @@
                 success_title: "यशस्वी!", success_msg: "तुमचा अर्ज यशस्वीरित्या सादर केला गेला आहे.",
                 note: "<strong>सूचना -</strong> कार्यक्रमासाठी आवश्यक असणाऱ्या सर्व बाबींची पूर्तता करण्यासाठी समन्वयक यांनी कार्यक्रमाच्या एक दिवस अगोदर पूर्वसूचना द्याव्यात. सुट्टीच्या दिवशी सभागृह उपलब्ध करण्याची जबाबदारी संबंधित विभागाची राहील. प्रथम आलेल्या अर्जास प्राधान्य दिले जाईल. कार्यक्रमासाठी लागणाऱ्या सर्व बाबींचे नियोजन व व्यवस्थापन करण्याची सर्वस्वी जबाबदारी कार्यक्रम प्रमुखाची राहील. <strong>सभागृहातील साहित्याच्या नुकसानीस समन्वयक जबाबदार राहतील.</strong>",
                 agar: "अगरबत्ती", match: "काडीपेटी", oil: "तेल", wati: "वाती", kapur: "कापूरवडी",
-                satarangi: "सतरंजी", carpet: "रेड कारपेट", mandap: "मंडप", saraswati: "सरस्वती प्रतिमा", samai: "समाई"
+                satarangi: "सतरंजी", carpet: "रेड कारपेट", mandap: "मंडप", saraswati: "सरस्वती प्रतिमा", samai: "समाई",
+                venueNames: {
+                    "Main Auditorium": "मुख्य सभागृह",
+                    "Sai Baba Hall": "साई बाबा हॉल",
+                    "New Seminar Hall": "न्यु सेमिनार हॉल"
+                }
             },
             en: {
                 college: "Sangamner Municipal Arts, D.J. Malpani Commerce and B.N. Sarda Science College, Sangamner",
@@ -409,10 +352,10 @@
                 date: "Date:", day: "Day:", time: "Time:", to: "To",
                 event: "Event Name:", dept: "Department:", mob: "Mobile No:",
                 coord: "Program Head / Coordinator Name:", venue: "Venue Required:",
+                venuePlaceholder: "-- Select Venue --",
                 stage: "Stage Size:", chairs: "Stage Chairs Count -", audience: "Estimated Participants:",
                 chair_placeholder: "Count",
                 days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-                venues: ["-- Select Venue --", "Sai Baba Hall", "New Seminar Hall"],
                 stages: ["-- Select Size --", "Large", "Small"],
                 opt_wheel: "Wheel", opt_fiber: "Fiber",
                 req: "Materials & Facilities", mic: "Mic:", ls: "Loud Speaker:", proj: "LCD Projector:", lap: "Laptop:",
@@ -420,7 +363,12 @@
                 success_title: "Submitted!", success_msg: "Your application has been submitted successfully.",
                 note: "<strong>Note -</strong> To fulfill requirements, the coordinator should give prior notice one day before. On holidays, the responsibility of making the hall available lies with the concerned department. Priority to first come first serve. The complete responsibility of management shall lie with the Program Head. <strong>The coordinator will be responsible for damages.</strong>",
                 agar: "Incense Sticks", match: "Matchbox", oil: "Oil", wati: "Cotton Wicks", kapur: "Camphor",
-                satarangi: "Satarangi/Mat", carpet: "Red Carpet", mandap: "Mandap", saraswati: "Saraswati Photo", samai: "Traditional Lamp"
+                satarangi: "Satarangi/Mat", carpet: "Red Carpet", mandap: "Mandap", saraswati: "Saraswati Photo", samai: "Traditional Lamp",
+                venueNames: {
+                    "Main Auditorium": "Main Auditorium",
+                    "Sai Baba Hall": "Sai Baba Hall",
+                    "New Seminar Hall": "New Seminar Hall"
+                }
             }
         };
 
@@ -442,7 +390,6 @@
             document.getElementById('form-title').innerText = t.title;
             document.getElementById('note-text').innerHTML = t.note;
 
-            // Labels
             const labelMap = {
                 '.lbl-date': t.date, '.lbl-day': t.day, '.lbl-time': t.time, '.lbl-to': t.to,
                 '.lbl-event': t.event, '.lbl-dept': t.dept, '.lbl-mob': t.mob, '.lbl-coord': t.coord,
@@ -461,6 +408,7 @@
             document.getElementById('chairCount').placeholder = t.chair_placeholder;
             document.getElementById('optWheel').innerText = t.opt_wheel;
             document.getElementById('optFiber').innerText = t.opt_fiber;
+            document.getElementById('venuePlaceholder').innerText = t.venuePlaceholder;
 
             // Day Select
             const daySelect = document.getElementById('daySelect');
@@ -471,9 +419,21 @@
             });
             daySelect.selectedIndex = dIdx;
 
-            // Venue Select - Already populated in HTML, no need to repopulate
+            // Venue Select Translation Logic
             const venueSelect = document.getElementById('venueSelect');
-            const vIdx = venueSelect.selectedIndex !== -1 ? venueSelect.selectedIndex : 0;
+            Array.from(venueSelect.options).forEach(option => {
+                if (option.id === 'venuePlaceholder') return;
+                
+                // Keep the original English name in a data attribute
+                if (!option.getAttribute('data-orig')) {
+                    option.setAttribute('data-orig', option.text.trim());
+                }
+                
+                const origName = option.getAttribute('data-orig');
+                if (t.venueNames[origName]) {
+                    option.text = t.venueNames[origName];
+                }
+            });
 
             // Stage Select
             const stageSelect = document.getElementById('stageSelect');
@@ -503,53 +463,41 @@
                 return false;
             }
 
-            // Submit the form data to the server
             const formData = new FormData(document.getElementById('bookingForm'));
 
             fetch('{% url "booking" %}', {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                }
+                headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') }
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            title: t.success_title,
-                            text: data.message || t.success_msg,
-                            icon: 'success',
-                            confirmButtonColor: '#2563eb'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                document.getElementById('bookingForm').reset();
-                                switchLanguage();
-                                // Redirect to my bookings page
-                                window.location.href = '{% url "mybooking" %}';
-                            }
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: lang === 'mr' ? 'चूक!' : 'Error',
-                            text: data.message || (lang === 'mr' ? 'त्रुटी झाली!' : 'An error occurred!')
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: t.success_title,
+                        text: data.message || t.success_msg,
+                        icon: 'success',
+                        confirmButtonColor: '#2563eb'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '{% url "mybooking" %}';
+                        }
+                    });
+                } else {
                     Swal.fire({
                         icon: 'error',
                         title: lang === 'mr' ? 'चूक!' : 'Error',
-                        text: lang === 'mr' ? 'त्रुटी झाली!' : 'Network error occurred!'
+                        text: data.message || (lang === 'mr' ? 'त्रुटी झाली!' : 'An error occurred!')
                     });
-                });
+                }
+            })
+            .catch(error => {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Network error occurred!' });
+            });
         }
 
         window.onload = switchLanguage;
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
