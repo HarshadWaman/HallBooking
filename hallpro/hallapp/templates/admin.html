@@ -7,16 +7,22 @@
   <title>Admin Dashboard - Sangamner College</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      background-color: #f8f9fa;
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&q=80&w=1920') center/cover fixed;
+      min-height: 100vh;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .sidebar {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       min-height: 100vh;
       padding: 20px 0;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .sidebar-nav {
@@ -45,40 +51,52 @@
     }
 
     .navbar {
-      background: white;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      /* FIX: Ensure navbar is above other content */
+      position: relative;
+      z-index: 1050;
     }
 
     .navbar-brand {
       font-weight: bold;
       font-size: 1.3rem;
-      color: #667eea !important;
+      color: #fff !important;
     }
 
     .admin-header {
       padding: 20px;
-      background: white;
-      border-bottom: 2px solid #e9ecef;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
       margin-bottom: 30px;
+      border-radius: 10px;
     }
 
     .admin-header h1 {
       margin: 0;
-      color: #333;
+      color: #fff;
     }
 
     .stats-card {
-      background: white;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 20px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      border-left: 4px solid #667eea;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
     }
 
     .stats-card h3 {
       margin-top: 15px;
-      color: #333;
+      color: #fff;
       font-weight: bold;
     }
 
@@ -95,9 +113,13 @@
     }
 
     .card {
-      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      color: #fff;
     }
 
     .card-header {
@@ -117,9 +139,13 @@
     }
 
     .table-responsive {
-      background: white;
+      background: transparent;
       border-radius: 10px;
       overflow: hidden;
+    }
+
+    .table {
+      color: #fff;
     }
 
     .logout-btn {
@@ -139,8 +165,82 @@
     }
 
     .breadcrumb {
-      background-color: #e9ecef;
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: 10px;
+      padding: 10px 15px;
+    }
+
+    .breadcrumb-item a {
+      color: #fff;
+    }
+
+    .breadcrumb-item.active {
+      color: #fff;
+    }
+
+    /* Profile Dropdown Styles - UPDATED FOR VISIBILITY */
+    .dropdown-toggle {
+      color: #fff !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 8px 16px !important;
+      border-radius: 8px !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .dropdown-toggle:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+      border-color: rgba(255, 255, 255, 0.5) !important;
+      transform: translateY(-1px);
+    }
+
+    .dropdown-menu {
+      background: rgba(255, 255, 255, 0.98) !important; /* Made more solid for contrast */
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+      
+      /* FIX: Positioning and Z-Index */
+      position: absolute !important;
+      z-index: 9999 !important;
+      right: 0 !important;
+      left: auto !important;
+      margin-top: 10px !important;
+      min-width: 200px !important;
+    }
+
+    .dropdown-menu.show {
+        display: block !important;
+    }
+
+    .dropdown-header {
+      color: #333 !important;
+      font-weight: 600;
+      background: rgba(102, 126, 234, 0.1);
+      padding: 10px 15px;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .dropdown-item {
+      color: #333 !important;
+      padding: 10px 20px !important;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(102, 126, 234, 0.1) !important;
+      color: #667eea !important;
+    }
+
+    /* Main Content Container Fix */
+    .main-content-column {
+        position: relative;
+        z-index: 10;
     }
   </style>
 </head>
@@ -148,72 +248,49 @@
 <body>
   <div class="container-fluid">
     <div class="row">
-      <!-- Sidebar -->
       <div class="col-md-3 sidebar">
-        <div
-          style="padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px;">
+        <div style="padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px;">
           <i class="fas fa-user-tie" style="font-size: 3rem; color: white; margin-bottom: 10px; display: block;"></i>
           <h5 style="color: white; margin: 0;">Admin Panel</h5>
         </div>
         <ul class="sidebar-nav">
-          <li><a href="#" onclick="switchSection('dashboard')" class="active"><i class="fas fa-chart-line"></i>
-              Dashboard</a></li>
-          <li><a href="#" onclick="switchSection('bookings')"><i class="fas fa-calendar-check"></i> Hall Bookings</a>
-          </li>
+          <li><a href="#" onclick="switchSection('dashboard')" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+          <li><a href="#" onclick="switchSection('bookings')"><i class="fas fa-calendar-check"></i> Hall Bookings</a></li>
           <li><a href="#" onclick="switchSection('halls')"><i class="fas fa-door-open"></i> Manage Halls</a></li>
           <li><a href="#" onclick="switchSection('users')"><i class="fas fa-users"></i> Users</a></li>
           <li><a href="#" onclick="switchSection('reports')"><i class="fas fa-file-alt"></i> Reports</a></li>
-          <li style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 20px;"><a href="/logout/"
-              class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+          <li style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: 20px;"><a href="/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
       </div>
 
-      <!-- Main Content -->
-      <div class="col-md-9">
-        <!-- Navbar -->
+      <div class="col-md-9 main-content-column">
         <nav class="navbar navbar-expand-lg">
           <div class="container-fluid">
             <span class="navbar-brand">Sangamner College - Hall Booking System</span>
             <div class="ms-auto">
-              <!-- Profile Dropdown -->
               <div class="dropdown">
-                <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="adminProfileDropdown"
-                  data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn dropdown-toggle d-flex align-items-center" type="button" id="adminProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-user-circle me-2"></i>
                   <span>{{ admin.get_full_name|default:admin.username }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminProfileDropdown">
-                  <li>
-                    <h6 class="dropdown-header">{{ admin.get_full_name|default:admin.username }}</h6>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
+                  <li><h6 class="dropdown-header">{{ admin.get_full_name|default:admin.username }}</h6></li>
+                  <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
-                  <li><a class="dropdown-item" href="{% url 'admin-dashboard' %}"><i
-                        class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                  <li><a class="dropdown-item" href="{% url 'index' %}"><i class="fas fa-home me-2"></i>Go to
-                      Homepage</a></li>
-                  <li><a class="dropdown-item" href="{% url 'mybooking' %}"><i class="fas fa-calendar me-2"></i>My
-                      Bookings</a></li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li><a class="dropdown-item" href="{% url 'logout' %}"><i
-                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                  <li><a class="dropdown-item" href="{% url 'admin-dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                 </ul>
               </div>
             </div>
           </div>
         </nav>
 
-        <!-- Header -->
-        <div class="admin-header">
+        <div class="admin-header mt-3">
           <h1 id="section-title">Admin Dashboard</h1>
         </div>
 
         <div style="padding: 0 20px;">
-          <!-- Dashboard Section -->
           <div id="dashboard" class="section active">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
@@ -222,48 +299,47 @@
             </nav>
 
             <div class="row">
-              <div class="col-md-6 col-lg-3">
-                <div class="stats-card">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <div class="number">{{ total_halls }}</div>
-                      <h3>Total Halls</h3>
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h5 class="mb-0">Dashboard Overview</h5>
+                  </div>
+                  <div class="card-body">
+                    <div style="max-width: 400px; width: 100%;">
+                      <canvas id="overviewChart" data-halls="{{ total_halls|default:'0' }}" data-bookings="{{ total_bookings|default:'0' }}" data-users="{{ users_count|default:'0' }}" data-pending="{{ pending_bookings|default:'0' }}"></canvas>
                     </div>
-                    <i class="fas fa-building icon"></i>
                   </div>
                 </div>
               </div>
-              <div class="col-md-6 col-lg-3">
-                <div class="stats-card" style="border-left-color: #28a745;">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <div class="number" style="color: #28a745;">{{ total_bookings }}</div>
-                      <h3>Total Bookings</h3>
-                    </div>
-                    <i class="fas fa-calendar icon" style="color: #28a745;"></i>
-                  </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-3">
+                <div class="stats-card text-center">
+                  <i class="fas fa-door-open icon"></i>
+                  <div class="number">{{ total_halls|default:'0' }}</div>
+                  <h3>Total Halls</h3>
                 </div>
               </div>
-              <div class="col-md-6 col-lg-3">
-                <div class="stats-card" style="border-left-color: #17a2b8;">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <div class="number" style="color: #17a2b8;">{{ users_count }}</div>
-                      <h3>Total Users</h3>
-                    </div>
-                    <i class="fas fa-users icon" style="color: #17a2b8;"></i>
-                  </div>
+              <div class="col-md-3">
+                <div class="stats-card text-center">
+                  <i class="fas fa-calendar-check icon"></i>
+                  <div class="number">{{ total_bookings|default:'0' }}</div>
+                  <h3>Total Bookings</h3>
                 </div>
               </div>
-              <div class="col-md-6 col-lg-3">
-                <div class="stats-card" style="border-left-color: #ffc107;">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <div class="number" style="color: #ffc107;">{{ pending_bookings }}</div>
-                      <h3>Pending</h3>
-                    </div>
-                    <i class="fas fa-hourglass icon" style="color: #ffc107;"></i>
-                  </div>
+              <div class="col-md-3">
+                <div class="stats-card text-center">
+                  <i class="fas fa-users icon"></i>
+                  <div class="number">{{ users_count|default:'0' }}</div>
+                  <h3>Total Users</h3>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stats-card text-center">
+                  <i class="fas fa-clock icon"></i>
+                  <div class="number">{{ pending_bookings|default:'0' }}</div>
+                  <h3>Pending Bookings</h3>
                 </div>
               </div>
             </div>
@@ -302,8 +378,7 @@
                           <span class="badge bg-secondary">{{ booking.status }}</span>
                           {% endif %}
                         </td>
-                        <td><button class="btn btn-sm btn-primary"
-                            onclick="viewBookingDetails('{{ booking.id }}')">View</button></td>
+                        <td><button class="btn btn-sm btn-primary" onclick="viewBookingDetails('{{ booking.id }}')">View</button></td>
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -318,7 +393,6 @@
             </div>
           </div>
 
-          <!-- Bookings Section -->
           <div id="bookings" class="section">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
@@ -366,34 +440,18 @@
                         </td>
                         <td>
                           {% if booking.status == 'PENDING' %}
-                          <button class="btn btn-sm btn-success"
-                            onclick="updateBookingStatus('{{ booking.id }}', 'APPROVED')">
-                            <i class="fas fa-check"></i> Approve
-                          </button>
-                          <button class="btn btn-sm btn-danger"
-                            onclick="updateBookingStatus('{{ booking.id }}', 'REJECTED')">
-                            <i class="fas fa-times"></i> Reject
-                          </button>
+                          <button class="btn btn-sm btn-success" onclick="updateBookingStatus('{{ booking.id }}', 'APPROVED')"><i class="fas fa-check"></i> Approve</button>
+                          <button class="btn btn-sm btn-danger" onclick="updateBookingStatus('{{ booking.id }}', 'REJECTED')"><i class="fas fa-times"></i> Reject</button>
                           {% elif booking.status == 'REJECTED' %}
-                          <button class="btn btn-sm btn-warning"
-                            onclick="updateBookingStatus('{{ booking.id }}', 'APPROVED')">
-                            <i class="fas fa-redo"></i> Reconsider
-                          </button>
+                          <button class="btn btn-sm btn-warning" onclick="updateBookingStatus('{{ booking.id }}', 'APPROVED')"><i class="fas fa-redo"></i> Reconsider</button>
                           {% else %}
-                          <button class="btn btn-sm btn-warning"
-                            onclick="updateBookingStatus('{{ booking.id }}', 'PENDING')">
-                            <i class="fas fa-undo"></i> Reset
-                          </button>
+                          <button class="btn btn-sm btn-warning" onclick="updateBookingStatus('{{ booking.id }}', 'PENDING')"><i class="fas fa-undo"></i> Reset</button>
                           {% endif %}
-                          <button class="btn btn-sm btn-danger ms-2" onclick="deleteBooking('{{ booking.id }}')">
-                            <i class="fas fa-trash"></i> Delete
-                          </button>
+                          <button class="btn btn-sm btn-danger ms-2" onclick="deleteBooking('{{ booking.id }}')"><i class="fas fa-trash"></i> Delete</button>
                         </td>
                       </tr>
                       {% empty %}
-                      <tr>
-                        <td colspan="7" class="text-center text-muted">No bookings found.</td>
-                      </tr>
+                      <tr><td colspan="7" class="text-center text-muted">No bookings found.</td></tr>
                       {% endfor %}
                     </tbody>
                   </table>
@@ -402,7 +460,6 @@
             </div>
           </div>
 
-          <!-- Halls Section -->
           <div id="halls" class="section">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
@@ -410,50 +467,24 @@
                 <li class="breadcrumb-item active">Manage Halls</li>
               </ol>
             </nav>
-
             <div class="row mb-3">
               <div class="col-md-12">
-                <button class="btn btn-primary" onclick="showAddHallModal()"><i class="fas fa-plus"></i> Add New
-                  Hall</button>
+                <button class="btn btn-primary" onclick="showAddHallModal()"><i class="fas fa-plus"></i> Add New Hall</button>
               </div>
             </div>
-
             <div class="card">
-              <div class="card-header">
-                <h5 class="mb-0">Available Halls</h5>
-              </div>
+              <div class="card-header"><h5 class="mb-0">Available Halls</h5></div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table table-hover">
                     <thead>
-                      <tr>
-                        <th>Hall Name</th>
-                        <th>Capacity</th>
-                        <th>Location</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                      </tr>
+                      <tr><th>Hall Name</th><th>Capacity</th><th>Location</th><th>Status</th><th>Action</th></tr>
                     </thead>
                     <tbody>
                       <tr>
-                        <td>Main Auditorium</td>
-                        <td>500</td>
-                        <td>Block A</td>
+                        <td>Main Auditorium</td><td>500</td><td>Block A</td>
                         <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                          <button class="btn btn-sm btn-info">Edit</button>
-                          <button class="btn btn-sm btn-danger">Delete</button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Conference Hall</td>
-                        <td>150</td>
-                        <td>Block B</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td>
-                          <button class="btn btn-sm btn-info">Edit</button>
-                          <button class="btn btn-sm btn-danger">Delete</button>
-                        </td>
+                        <td><button class="btn btn-sm btn-info" onclick="editHall('1')"><i class="fas fa-edit"></i> Edit</button><button class="btn btn-sm btn-danger" onclick="deleteHall('1')"><i class="fas fa-trash"></i> Delete</button></td>
                       </tr>
                     </tbody>
                   </table>
@@ -462,7 +493,6 @@
             </div>
           </div>
 
-          <!-- Users Section -->
           <div id="users" class="section">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
@@ -470,28 +500,16 @@
                 <li class="breadcrumb-item active">Users</li>
               </ol>
             </nav>
-
             <div class="card">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Registered Users</h5>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                  <i class="fas fa-plus me-2"></i>Add User
-                </button>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal"><i class="fas fa-plus me-2"></i>Add User</button>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table table-hover">
                     <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Type</th>
-                        <th>Bookings</th>
-                        <th>Status</th>
-                        <th>Joined</th>
-                        <th>Actions</th>
-                      </tr>
+                      <tr><th>ID</th><th>Name</th><th>Email</th><th>Type</th><th>Bookings</th><th>Status</th><th>Joined</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                       {% for user in users %}
@@ -499,38 +517,13 @@
                         <td>#U{{ user.id|stringformat:"03d" }}</td>
                         <td>{{ user.get_full_name|default:user.username }}</td>
                         <td>{{ user.email }}</td>
-                        <td>
-                          <span
-                            class="badge {% if user.user_type == 'admin' %}bg-danger{% else %}bg-primary{% endif %}">
-                            {{ user.user_type|title }}
-                          </span>
-                        </td>
+                        <td><span class="badge {% if user.user_type == 'admin' %}bg-danger{% else %}bg-primary{% endif %}">{{ user.user_type|title }}</span></td>
                         <td>{{ user.booking_set.count }}</td>
-                        <td>
-                          <span class="badge {% if user.is_active %}bg-success{% else %}bg-secondary{% endif %}">
-                            {% if user.is_active %}Active{% else %}Blocked{% endif %}
-                          </span>
-                        </td>
+                        <td><span class="badge {% if user.is_active %}bg-success{% else %}bg-secondary{% endif %}">{% if user.is_active %}Active{% else %}Blocked{% endif %}</span></td>
                         <td>{{ user.date_joined|date:"d M Y" }}</td>
                         <td>
-                          <button class="btn btn-sm btn-info" data-user-id="{{ user.id }}"
-                            data-user-name="{{ user.get_full_name|default:user.username|escapejs }}"
-                            data-user-email="{{ user.email|escapejs }}" data-user-type="{{ user.user_type|escapejs }}"
-                            data-user-active="{{ user.is_active|yesno:'true,false' }}" onclick="editUser(this)">
-                            <i class="fas fa-edit"></i>
-                          </button>
-                          {% if user.id != admin.id %}
-                          <button class="btn btn-sm {% if user.is_active %}btn-warning{% else %}btn-success{% endif %}"
-                            data-user-id="{{ user.id }}" data-user-active="{{ user.is_active|yesno:'false,true' }}"
-                            onclick="toggleUserStatus(this)">
-                            <i class="fas {% if user.is_active %}fa-ban{% else %}fa-check{% endif %}"></i>
-                          </button>
-                          {% endif %}
+                          <button class="btn btn-sm btn-info" data-user-id="{{ user.id }}" data-user-name="{{ user.get_full_name|default:user.username|escapejs }}" onclick="editUser(this)"><i class="fas fa-edit"></i></button>
                         </td>
-                      </tr>
-                      {% empty %}
-                      <tr>
-                        <td colspan="7" class="text-center text-muted">No users found.</td>
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -540,7 +533,6 @@
             </div>
           </div>
 
-          <!-- Reports Section -->
           <div id="reports" class="section">
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
@@ -548,24 +540,9 @@
                 <li class="breadcrumb-item active">Reports</li>
               </ol>
             </nav>
-
             <div class="card">
-              <div class="card-header">
-                <h5 class="mb-0">Booking Reports</h5>
-              </div>
-              <div class="card-body">
-                <p>Monthly statistics and reports will be displayed here.</p>
-                <div class="row">
-                  <div class="col-md-6">
-                    <h6>Booking Trend</h6>
-                    <p class="text-muted">Monthly booking data</p>
-                  </div>
-                  <div class="col-md-6">
-                    <h6>Hall Utilization</h6>
-                    <p class="text-muted">Hall usage statistics</p>
-                  </div>
-                </div>
-              </div>
+              <div class="card-header"><h5 class="mb-0">Booking Reports</h5></div>
+              <div class="card-body"><p>Monthly statistics and reports will be displayed here.</p></div>
             </div>
           </div>
         </div>
@@ -573,337 +550,110 @@
     </div>
   </div>
 
-  <!-- Booking Details Modal -->
-  <div class="modal fade" id="bookingDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Booking Details</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div id="bookingDetailsContent">
-            <!-- Booking details will be loaded here -->
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add User Modal -->
-  <div class="modal fade" id="addUserModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add New User</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="addUserForm">
-            {% csrf_token %}
-            <div class="mb-3">
-              <label class="form-label">Full Name</label>
-              <input type="text" class="form-control" id="addUserName" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input type="email" class="form-control" id="addUserEmail" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Password</label>
-              <input type="password" class="form-control" id="addUserPassword" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">User Type</label>
-              <select class="form-select" id="addUserType">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="addUser()">Add User</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Hall Modal -->
-  <div class="modal fade" id="addHallModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add New Hall</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
-        </div>
-        <div class="modal-body">
-          <form id="addHallForm">
-            {% csrf_token %}
-            <div class="mb-3">
-              <label class="form-label">Hall Name</label>
-              <input type="text" class="form-control" id="hallName" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Capacity</label>
-              <input type="number" class="form-control" id="hallCapacity" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Location</label>
-              <input type="text" class="form-control" id="hallLocation" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Status</label>
-              <select class="form-select" id="hallStatus">
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-              </select>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="addHall()">Add Hall</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Edit User Modal -->
-  <div class="modal fade" id="editUserModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit User</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="editUserForm">
-            {% csrf_token %}
-            <input type="hidden" id="editUserId">
-            <div class="mb-3">
-              <label class="form-label">Full Name</label>
-              <input type="text" class="form-control" id="editUserName" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input type="email" class="form-control" id="editUserEmail" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">User Type</label>
-              <select class="form-select" id="editUserType">
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="editUserActive">
-                <label class="form-check-label" for="editUserActive">Active</label>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="updateUser()">Update User</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="modal fade" id="bookingDetailsModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Booking Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="bookingDetailsContent"></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>
+  <div class="modal fade" id="addUserModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Add New User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="addUserForm">{% csrf_token %}<div class="mb-3"><label class="form-label">Full Name</label><input type="text" class="form-control" id="addUserName" required></div><div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" id="addUserEmail" required></div><div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" id="addUserPassword" required></div><div class="mb-3"><label class="form-label">User Type</label><select class="form-select" id="addUserType"><option value="user">User</option><option value="admin">Admin</option></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="addUser()">Add User</button></div></div></div></div>
+  <div class="modal fade" id="editUserModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Edit User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="editUserForm">{% csrf_token %}<input type="hidden" id="editUserId"><div class="mb-3"><label class="form-label">Full Name</label><input type="text" class="form-control" id="editUserName" required></div><div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" id="editUserEmail" required></div><div class="mb-3"><label class="form-label">User Type</label><select class="form-select" id="editUserType"><option value="user">User</option><option value="admin">Admin</option></select></div><div class="mb-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="editUserActive"><label class="form-check-label" for="editUserActive">Active</label></div></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="updateUser()">Update User</button></div></div></div></div>
+  <div class="modal fade" id="addHallModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Add New Hall</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="addHallForm">{% csrf_token %}<div class="mb-3"><label class="form-label">Hall Name</label><input type="text" class="form-control" id="hallName" required></div><div class="mb-3"><label class="form-label">Capacity</label><input type="number" class="form-control" id="hallCapacity" required></div><div class="mb-3"><label class="form-label">Location</label><input type="text" class="form-control" id="hallLocation" required></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="addHall()">Add Hall</button></div></div></div></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Real-time Clock and Booking Status Monitor for Admin
-    let adminStatusCheckInterval;
+    // Chart Initializer
+    document.addEventListener('DOMContentLoaded', function () {
+      const chartCanvas = document.getElementById('overviewChart');
+      const ctx = chartCanvas.getContext('2d');
+      const chartData = [
+        chartCanvas.dataset.halls,
+        chartCanvas.dataset.bookings,
+        chartCanvas.dataset.users,
+        chartCanvas.dataset.pending
+      ];
 
-    function startAdminStatusMonitoring() {
-      // Clear any existing interval
-      if (adminStatusCheckInterval) {
-        clearInterval(adminStatusCheckInterval);
-      }
-
-      // Check booking status every 30 seconds
-      adminStatusCheckInterval = setInterval(checkAdminBookingStatuses, 30000);
-
-      // Initial check
-      checkAdminBookingStatuses();
-    }
-
-    function checkAdminBookingStatuses() {
-      const bookingRows = document.querySelectorAll('tbody tr');
-
-      bookingRows.forEach(row => {
-        const bookingIdCell = row.querySelector('td:first-child');
-        if (bookingIdCell) {
-          const bookingIdText = bookingIdCell.textContent.replace('#', '').trim();
-          checkAdminSingleBookingStatus(bookingIdText, row);
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Halls', 'Bookings', 'Users', 'Pending'],
+          datasets: [{
+            label: 'System Overview',
+            data: chartData,
+            borderColor: 'rgba(102, 126, 234, 1)',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+              },
+              ticks: {
+                color: '#fff',
+                font: {
+                  size: 12,
+                  family: 'Arial, sans-serif'
+                }
+              }
+            },
+            x: {
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)',
+                borderColor: 'rgba(255, 255, 255, 0.2)'
+              },
+              ticks: {
+                color: '#fff',
+                font: {
+                  size: 12,
+                  family: 'Arial, sans-serif'
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              borderColor: 'rgba(255, 255, 255, 0.3)',
+              borderWidth: 2,
+              padding: 15,
+              displayColors: true,
+              cornerRadius: 8,
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.parsed.y || 0;
+                  return `${label}: ${value}`;
+                }
+              }
+            }
+          },
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          },
+          animation: {
+            duration: 2000,
+            easing: 'easeInOutQuart'
+          }
         }
       });
-    }
-
-    function checkAdminSingleBookingStatus(bookingId, rowElement) {
-      fetch(`/api/booking-status/${bookingId}/`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken')
-        }
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            const booking = data.booking;
-            const statusCell = rowElement.querySelector('td:nth-child(6)'); // Status column
-
-            // Update status cell with real-time info
-            if (booking.status === 'IN_PROGRESS') {
-              statusCell.innerHTML = '<span class="badge bg-warning">In Progress</span>';
-            } else if (booking.status === 'COMPLETED') {
-              statusCell.innerHTML = '<span class="badge bg-success">Completed</span>';
-            }
-
-            // Show admin notifications
-            if (booking.event_started && booking.status === 'IN_PROGRESS') {
-              showAdminNotification('Event Started', `Event "${booking.event_name}" has started!`, 'info');
-            }
-
-            if (booking.event_completed && booking.status === 'COMPLETED') {
-              showAdminNotification('Event Completed', `Event "${booking.event_name}" has been completed!`, 'success');
-            }
-          }
-        })
-        .catch(error => {
-          console.error('Error checking booking status:', error);
-        });
-    }
-
-    function showAdminNotification(title, message, type) {
-      // Create notification element for admin
-      const notification = document.createElement('div');
-      notification.className = `admin-notification admin-notification-${type}`;
-      notification.innerHTML = `
-        <div class="notification-header">
-          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'info' ? 'info-circle' : 'exclamation-triangle'}"></i>
-          <strong>${title}</strong>
-        </div>
-        <div class="notification-message">${message}</div>
-        <button class="notification-close" onclick="this.parentElement.remove()">
-          <i class="fas fa-times"></i>
-        </button>
-      `;
-
-      // Add to page
-      document.body.appendChild(notification);
-
-      // Auto-remove after 5 seconds
-      setTimeout(() => {
-        if (notification.parentElement) {
-          notification.remove();
-        }
-      }, 5000);
-    }
-
-    function showAddHallModal() {
-      // Clear any existing form data
-      document.getElementById('hallName').value = '';
-      document.getElementById('hallCapacity').value = '';
-      document.getElementById('hallLocation').value = '';
-      document.getElementById('hallStatus').value = 'true';
-
-      // Show the modal
-      new bootstrap.Modal(document.getElementById('addHallModal')).show();
-    }
-
-    function addHall() {
-      const name = document.getElementById('hallName').value;
-      const capacity = document.getElementById('hallCapacity').value;
-      const location = document.getElementById('hallLocation').value;
-      const is_active = document.getElementById('hallStatus').value === 'true';
-
-      if (!name || !capacity || !location) {
-        alert('Please fill all required fields');
-        return;
-      }
-
-      fetch('/api/add-hall/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-          name: name,
-          capacity: capacity,
-          location: location,
-          is_active: is_active
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alert('Hall added successfully!');
-            // Hide the modal
-            bootstrap.Modal.getInstance(document.getElementById('addHallModal')).hide();
-
-            // Clear the form
-            document.getElementById('addHallForm').reset();
-
-            // Refresh the page to show the new hall
-            location.reload();
-          } else {
-            alert('Error: ' + data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred while adding the hall');
-        });
-    }
-
-    // Start monitoring when page loads
-    document.addEventListener('DOMContentLoaded', function () {
-      startAdminStatusMonitoring();
     });
 
-    // CSRF Token helper
-    function deleteBooking(bookingId) {
-      if (confirm('Are you sure you want to permanently delete this booking? This action cannot be undone!')) {
-        fetch(`/api/delete-booking/${bookingId}/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-          }
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              alert('Booking deleted permanently!');
-              // Remove the booking row from the table
-              const bookingRow = document.querySelector(`[onclick*="' + bookingId + '"]`).closest('tr');
-              if (bookingRow) {
-                bookingRow.style.transition = 'opacity 0.3s';
-                bookingRow.style.opacity = '0';
-                setTimeout(() => {
-                  bookingRow.remove();
-                }, 300);
-              }
-            } else {
-              alert('Error: ' + data.message);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while deleting the booking');
-          });
-      }
-    }
-
+    // Helper: CSRF Cookie
     function getCookie(name) {
       let cookieValue = null;
       if (document.cookie && document.cookie !== '') {
@@ -919,32 +669,196 @@
       return cookieValue;
     }
 
+    // Navigation
     function switchSection(sectionId) {
-      // Hide all sections
-      const sections = document.querySelectorAll('.section');
-      sections.forEach(section => {
-        section.classList.remove('active');
-      });
-
-      // Show selected section
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(sectionId).classList.add('active');
-
-      // Update title
-      const titles = {
-        'dashboard': 'Admin Dashboard',
-        'bookings': 'Hall Bookings',
-        'halls': 'Manage Halls',
-        'users': 'Users',
-        'reports': 'Reports'
-      };
+      document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      const titles = {'dashboard': 'Admin Dashboard', 'bookings': 'Hall Bookings', 'halls': 'Manage Halls', 'users': 'Users', 'reports': 'Reports'};
       document.getElementById('section-title').textContent = titles[sectionId];
+    }
 
-      // Update sidebar active link
-      const navLinks = document.querySelectorAll('.sidebar-nav a');
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-      });
-      document.querySelector(`[onclick="switchSection('${sectionId}')"]`).classList.add('active');
+    // API Handlers (Placeholders for your backend logic)
+    function addHall() {
+      const name = document.getElementById('hallName').value;
+      const capacity = document.getElementById('hallCapacity').value;
+      const location = document.getElementById('hallLocation').value;
+      
+      if (!name || !capacity || !location) {
+        alert('Please fill all required fields');
+        return;
+      }
+
+      fetch('/api/add-hall/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ name: name, capacity: parseInt(capacity), location: location, is_active: true })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Hide modal
+            bootstrap.Modal.getInstance(document.getElementById('addHallModal')).hide();
+            
+            // Clear form
+            document.getElementById('addHallForm').reset();
+            
+            // Add new hall to table dynamically
+            const hallTable = document.querySelector('#halls .table tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+              <td>${name}</td>
+              <td>${capacity}</td>
+              <td>${location}</td>
+              <td><span class="badge bg-success">Active</span></td>
+              <td><button class="btn btn-sm btn-info" onclick="editHall('${data.hall_id}')"><i class="fas fa-edit"></i> Edit</button><button class="btn btn-sm btn-danger" onclick="deleteHall('${data.hall_id}')"><i class="fas fa-trash"></i> Delete</button></td>
+            `;
+            hallTable.appendChild(newRow);
+            
+            alert('Hall added successfully!');
+          } else {
+            alert('Error: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while adding the hall');
+        });
+    }
+
+    function updateBookingStatus(id, status) {
+      if (!confirm(`Are you sure you want to ${status.toLowerCase()}?`)) return;
+      fetch(`/api/update-booking/${id}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ status: status })
+      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
+    }
+
+    function deleteBooking(id) {
+      if (!confirm('Permanent delete?')) return;
+      fetch(`/api/delete-booking/${id}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
+    }
+
+    function viewBookingDetails(id) {
+      fetch(`/api/booking-details/${id}/`)
+        .then(r => r.json())
+        .then(d => {
+          if (d.success) {
+            document.getElementById('bookingDetailsContent').innerHTML = `<p><strong>Event:</strong> ${d.booking.event_name}</p><p><strong>Status:</strong> ${d.booking.status}</p>`;
+            new bootstrap.Modal(document.getElementById('bookingDetailsModal')).show();
+          }
+        });
+    }
+    
+    function showAddHallModal() {
+        new bootstrap.Modal(document.getElementById('addHallModal')).show();
+    }
+
+    function editHall(hallId) {
+      // Create edit hall modal dynamically
+      const modalHtml = `
+        <div class="modal fade" id="editHallModal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit Hall</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                <form id="editHallForm">
+                  {% csrf_token %}
+                  <input type="hidden" id="editHallId" value="${hallId}">
+                  <div class="mb-3">
+                    <label class="form-label">Hall Name</label>
+                    <input type="text" class="form-control" id="editHallName" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Capacity</label>
+                    <input type="number" class="form-control" id="editHallCapacity" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-control" id="editHallLocation" required>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateHall()">Update Hall</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add modal to body if it doesn't exist
+      if (!document.getElementById('editHallModal')) {
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+      }
+      
+      // Show modal
+      new bootstrap.Modal(document.getElementById('editHallModal')).show();
+    }
+
+    function updateHall() {
+      const hallId = document.getElementById('editHallId').value;
+      const name = document.getElementById('editHallName').value;
+      const capacity = document.getElementById('editHallCapacity').value;
+      const location = document.getElementById('editHallLocation').value;
+      
+      if (!name || !capacity || !location) {
+        alert('Please fill all required fields');
+        return;
+      }
+
+      fetch(`/api/update-hall/${hallId}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ 
+          name: name, 
+          capacity: parseInt(capacity), 
+          location: location 
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Hide modal and remove from DOM
+            bootstrap.Modal.getInstance(document.getElementById('editHallModal')).hide();
+            document.getElementById('editHallModal').remove();
+            
+            // Update hall in table
+            const hallRow = document.querySelector(`#halls button[onclick*="${hallId}"]`).closest('tr');
+            if (hallRow) {
+              hallRow.querySelector('td:nth-child(1)').textContent = name;
+              hallRow.querySelector('td:nth-child(2)').textContent = capacity;
+              hallRow.querySelector('td:nth-child(3)').textContent = location;
+            }
+            
+            alert('Hall updated successfully!');
+          } else {
+            alert('Error: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while updating hall');
+        });
+    }
+
+    function deleteHall(hallId) {
+      if (confirm('Are you sure you want to delete this hall?')) {
+        fetch(`/api/delete-hall/${hallId}/`, {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
+      }
     }
 
     function addUser() {
@@ -960,47 +874,22 @@
 
       fetch('/api/add-user/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          password: password,
-          userType: userType
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alert('User created successfully!');
-            document.getElementById('addUserForm').reset();
-            bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
-            location.reload();
-          } else {
-            alert(data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred. Please try again.');
-        });
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ name: name, email: email, password: password, userType: userType })
+      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
     }
 
     function editUser(button) {
       const userId = button.dataset.userId;
-      const name = button.dataset.userName;
-      const email = button.dataset.userEmail;
+      const userName = button.dataset.userName;
+      const userEmail = button.dataset.userEmail;
       const userType = button.dataset.userType;
-      const isActive = button.dataset.userActive === 'true';
-
+      
       document.getElementById('editUserId').value = userId;
-      document.getElementById('editUserName').value = name;
-      document.getElementById('editUserEmail').value = email;
+      document.getElementById('editUserName').value = userName;
+      document.getElementById('editUserEmail').value = userEmail;
       document.getElementById('editUserType').value = userType;
-      document.getElementById('editUserActive').checked = isActive;
-
+      
       new bootstrap.Modal(document.getElementById('editUserModal')).show();
     }
 
@@ -1018,142 +907,24 @@
 
       fetch(`/api/update-user/${userId}/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          user_type: userType,
-          is_active: isActive
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alert('User updated successfully!');
-            bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
-            location.reload();
-          } else {
-            alert(data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred. Please try again.');
-        });
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ name: name, email: email, user_type: userType, is_active: isActive })
+      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
     }
 
     function toggleUserStatus(button) {
       const userId = button.dataset.userId;
       const newStatus = button.dataset.userActive === 'true';
       const action = newStatus ? 'activate' : 'block';
-      if (!confirm(`Are you sure you want to ${action} this user?`)) {
-        return;
-      }
+      
+      if (!confirm(`Are you sure you want to ${action} this user?`)) return;
 
       fetch(`/api/update-user/${userId}/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-          is_active: newStatus
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alert(`User ${action}d successfully!`);
-            location.reload();
-          } else {
-            alert(data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred. Please try again.');
-        });
-    }
-
-    function viewBookingDetails(bookingId) {
-      // Fetch booking details via API
-      fetch(`/api/booking-details/${bookingId}/`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            const booking = data.booking;
-            const statusBadge = {
-              'APPROVED': '<span class="badge bg-success">Approved</span>',
-              'PENDING': '<span class="badge bg-warning">Pending</span>',
-              'REJECTED': '<span class="badge bg-danger">Rejected</span>',
-              'COMPLETED': '<span class="badge bg-secondary">Completed</span>'
-            };
-
-            const detailsHtml = `
-              <div class="row">
-                <div class="col-md-6">
-                  <h6>Event Information</h6>
-                  <p><strong>Event Name:</strong> ${booking.event_name}</p>
-                  <p><strong>Hall:</strong> ${booking.hall_name}</p>
-                  <p><strong>Department:</strong> ${booking.department}</p>
-                  <p><strong>Date:</strong> ${booking.booking_date}</p>
-                  <p><strong>Time:</strong> ${booking.start_time} - ${booking.end_time}</p>
-                  <p><strong>Status:</strong> ${statusBadge[booking.status] || booking.status}</p>
-                </div>
-                <div class="col-md-6">
-                  <h6>Coordinator Information</h6>
-                  <p><strong>Name:</strong> ${booking.coordinator_name}</p>
-                  <p><strong>Mobile:</strong> ${booking.coordinator_mobile}</p>
-                  <p><strong>Booked By:</strong> ${booking.user_name}</p>
-                </div>
-              </div>
-            `;
-
-            document.getElementById('bookingDetailsContent').innerHTML = detailsHtml;
-            new bootstrap.Modal(document.getElementById('bookingDetailsModal')).show();
-          } else {
-            alert('Failed to load booking details');
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred while loading booking details');
-        });
-    }
-
-    function updateBookingStatus(bookingId, status) {
-      if (!confirm(`Are you sure you want to ${status.toLowerCase()} this booking?`)) {
-        return;
-      }
-
-      fetch(`/api/update-booking/${bookingId}/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify({
-          status: status
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alert(`Booking ${status.toLowerCase()}d successfully!`);
-            location.reload();
-          } else {
-            alert(data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred. Please try again.');
-        });
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ is_active: newStatus })
+      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
     }
   </script>
 </body>
-
 </html>

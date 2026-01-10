@@ -5,7 +5,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.urls import reverse
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value
 from django.utils import timezone
 from .models import User, Hall, Booking
 
@@ -462,8 +462,22 @@ def admin_dashboard(request):
         'total_bookings': Booking.objects.count(),
         'pending_bookings': Booking.objects.filter(status='PENDING').count(),
         'users_count': User.objects.count(),
-        'recent_bookings': Booking.objects.select_related('user', 'hall').exclude(status='CANCELLED').all().order_by('-created_at')[:5],
-        'all_bookings': Booking.objects.select_related('user', 'hall').exclude(status='CANCELLED').all().order_by('-booking_date', '-start_time'),
+        'recent_bookings': Booking.objects.select_related('user', 'hall').exclude(status='CANCELLED').annotate(
+            status_order=Case(
+                When(status='PENDING', then=Value(1)),
+                When(status='REJECTED', then=Value(2)),
+                When(status='APPROVED', then=Value(3)),
+                default=Value(4)
+            )
+        ).order_by('status_order', '-created_at')[:5],
+        'all_bookings': Booking.objects.select_related('user', 'hall').exclude(status='CANCELLED').annotate(
+            status_order=Case(
+                When(status='PENDING', then=Value(1)),
+                When(status='REJECTED', then=Value(2)),
+                When(status='APPROVED', then=Value(3)),
+                default=Value(4)
+            )
+        ).order_by('status_order', '-booking_date', '-start_time'),
         'users': User.objects.all().order_by('-date_joined')
     }
     return render(request, 'admin.html', context)
