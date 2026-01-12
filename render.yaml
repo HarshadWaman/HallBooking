@@ -23,7 +23,7 @@ services:
     autoDeploy: true
 
   # PostgreSQL Database
-  - type: postgres
+  - type: psql
     name: hallbooking-db
     plan: free
     ipAllowList: []
