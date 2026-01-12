@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: cd hallpro && gunicorn hallpro.wsgi:application 
+    startCommand: cd hallpro && gunicorn hallpro.wsgi:application
     healthCheckPath: /admin/
     autoDeploy: true
 
@@ -23,6 +23,11 @@ services:
 
       - key: PYTHONUNBUFFERED
         value: 1
+
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hallbooking-db
+          property: connectionString
 
 databases:
   - name: hallbooking-db
