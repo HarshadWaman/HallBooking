@@ -1,20 +1,9 @@
 services:
-  # PostgreSQL Database
-  - type: pserv
-    name: hallbooking-db
-    env: docker
-    plan: free
-    region: oregon
-    databases:
-      - name: hallbooking
-        user: hallbooking_user
-
   # Web Service (Django Application)
   - type: web
     name: hallbooking-web
     env: python
     plan: free
-    region: oregon
     buildCommand: |
       pip install --upgrade pip
       pip install -r requirements.txt
@@ -25,40 +14,35 @@ services:
     autoDeploy: true
     
     envVars:
-      # Python Configuration
       - key: PYTHON_VERSION
-        value: "3.11.0"
+        value: 3.11.0
       
-      # Django Security
       - key: SECRET_KEY
         generateValue: true
       
       - key: DEBUG
-        value: "False"
+        value: False
       
       - key: ALLOWED_HOSTS
-        value: ".onrender.com"
+        value: .onrender.com
       
-      # Database Connection
-      - key: DATABASE_URL
-        fromDatabase: hallbooking
-          name: hallbooking-db
-          property: connectionString
-      
-      # Additional Django Settings
       - key: DISABLE_COLLECTSTATIC
-        value: "0"
+        value: 0
       
       - key: PYTHONUNBUFFERED
-        value: "1"
+        value: 1
       
-      # CSRF and Security (update after deployment)
       - key: CSRF_TRUSTED_ORIGINS
-        value: "https://hallbooking-web.onrender.com"
+        value: https://hallbooking-web.onrender.com
       
-      # Static Files (if using)
       - key: STATIC_URL
-        value: "/static/"
+        value: /static/
       
       - key: STATIC_ROOT
-        value: "staticfiles"
+        value: staticfiles
+
+databases:
+  - name: hallbooking-db
+    databaseName: hallbooking
+    user: hallbooking_user
+    plan: free
