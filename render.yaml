@@ -41,7 +41,7 @@ services:
       
       # Database Connection
       - key: DATABASE_URL
-        fromDatabase:
+        fromDatabase: hallbooking
           name: hallbooking-db
           property: connectionString
       
