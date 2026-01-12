@@ -1,16 +1,11 @@
 services:
-  # Web Service (Django Application)
   - type: web
     name: hallbooking-web
     env: python
     plan: free
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
-      python manage.py collectstatic --no-input
-      python manage.py migrate --no-input
-    startCommand: gunicorn hallpro.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --threads 4
-    healthCheckPath: /
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate --no-input
+    startCommand: gunicorn hallpro.wsgi:application --bind 0.0.0.0:$PORT
+    healthCheckPath: /admin/
     autoDeploy: true
     
     envVars:
@@ -26,20 +21,8 @@ services:
       - key: ALLOWED_HOSTS
         value: .onrender.com
       
-      - key: DISABLE_COLLECTSTATIC
-        value: 0
-      
       - key: PYTHONUNBUFFERED
         value: 1
-      
-      - key: CSRF_TRUSTED_ORIGINS
-        value: https://hallbooking-web.onrender.com
-      
-      - key: STATIC_URL
-        value: /static/
-      
-      - key: STATIC_ROOT
-        value: staticfiles
 
 databases:
   - name: hallbooking-db
