@@ -85,14 +85,12 @@ WSGI_APPLICATION = 'hallpro.wsgi.application'
 
 
 # Database configuration
-if os.environ.get('DATABASE_URL'):
+database_url = os.environ.get('DATABASE_URL')
+
+if database_url:
     # Production: Use DATABASE_URL
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.environ.get('DATABASE_URL'),
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
+        'default': dj_database_url.parse(database_url)
     }
 else:
     # Local development: Use SQLite
