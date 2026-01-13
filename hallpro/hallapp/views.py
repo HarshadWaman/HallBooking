@@ -9,11 +9,7 @@ from django.db.models import Q, Case, When, Value
 from django.utils import timezone
 from .models import User, Hall, Booking
 
-# Hardcoded admin credentials
-HARDCODED_ADMINS = [
-    {'username': 'harshad', 'password': '9011818144', 'email': 'harshadwaman4@gmail.com', 'name': 'Harshad'},
-    {'username': 'nayan', 'password': 'nayan2105', 'email': 'nayanpatilnp11@gmail.com', 'name': 'Nayan'},
-]
+# Admin credentials are now stored in database
 
 # ===========================
 # Public Pages
@@ -46,27 +42,27 @@ def api_login(request):
         password = data.get('password')
         user_type = data.get('userType') # 'admin' or 'user'
 
-        # Check hardcoded admin credentials first
+        # Check admin credentials from database
         if user_type == 'admin':
-            for admin in HARDCODED_ADMINS:
-                if admin['email'] == email and admin['password'] == password:
-                    # Create a temporary user object for session
-                    from django.contrib.auth.models import AnonymousUser
-                    user = AnonymousUser()
-                    user.username = admin['username']
-                    user.email = admin['email']
-                    user.first_name = admin['name']
-                    user.user_type = 'admin'
-                    user.is_authenticated = True
-                    
+            try:
+                admin_user = User.objects.get(email=email, user_type='admin')
+                user = authenticate(username=admin_user.username, password=password)
+                
+                if user is not None:
                     # Store admin info in session
-                    request.session['admin_user'] = admin
+                    request.session['admin_user'] = {
+                        'username': user.username,
+                        'email': user.email,
+                        'name': user.get_full_name() or user.first_name
+                    }
                     request.session['is_admin'] = True
                     
                     login(request, user)
                     return JsonResponse({'success': True, 'redirect': reverse('admin-dashboard')})
-            
-            return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
+                else:
+                    return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
+            except User.DoesNotExist:
+                return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
         
         # Handle regular user login
         try:
@@ -130,16 +126,25 @@ def admin_login_api(request):
             if not email or not password:
                 return JsonResponse({'success': False, 'message': 'Email and password are required.'})
             
-            # Check hardcoded admin credentials
-            for admin in HARDCODED_ADMINS:
-                if admin['email'] == email and admin['password'] == password:
-                    # Create session for admin
-                    request.session['admin_user'] = admin
+            # Check admin credentials from database
+            try:
+                admin_user = User.objects.get(email=email, user_type='admin')
+                user = authenticate(username=admin_user.username, password=password)
+                
+                if user is not None:
+                    # Store admin info in session
+                    request.session['admin_user'] = {
+                        'username': user.username,
+                        'email': user.email,
+                        'name': user.get_full_name() or user.first_name
+                    }
                     request.session['is_admin'] = True
                     
                     return JsonResponse({'success': True, 'redirect': reverse('admin-dashboard')})
-            
-            return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
+                else:
+                    return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
+            except User.DoesNotExist:
+                return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
             
         except Exception as e:
             # Log the error for debugging
