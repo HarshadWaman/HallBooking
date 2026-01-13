@@ -156,8 +156,8 @@ STATICFILES_DIRS = [
 # CSRF and Security Settings
 CSRF_TRUSTED_ORIGINS = ['https://hallbooking-wqcd.onrender.com',]
 
-#HTTPS Settings for Production (Render)
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# SECURE_SSL_REDIRECT = True
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
+# HTTPS Settings for Production (Render)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
