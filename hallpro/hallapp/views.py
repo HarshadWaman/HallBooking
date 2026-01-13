@@ -349,6 +349,49 @@ def api_add_hall(request):
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 @ensure_csrf_cookie
+def api_update_hall(request, hall_id):
+    """Handle updating hall by admin"""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'})
+    
+    try:
+        hall = Hall.objects.get(id=hall_id)
+    except Hall.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Hall not found.'})
+    
+    if request.method == "POST":
+        data = json.loads(request.body)
+        
+        if 'name' in data:
+            hall.name = data['name']
+        if 'capacity' in data:
+            hall.capacity = int(data['capacity'])
+        if 'location' in data:
+            hall.location = data['location']
+        if 'is_active' in data:
+            hall.is_active = data['is_active']
+        
+        hall.save()
+        return JsonResponse({'success': True, 'message': 'Hall updated successfully!'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+@ensure_csrf_cookie
+def api_delete_hall(request, hall_id):
+    """Handle deleting hall by admin"""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'})
+    
+    try:
+        hall = Hall.objects.get(id=hall_id)
+        hall.delete()
+        return JsonResponse({'success': True, 'message': 'Hall deleted successfully!'})
+    except Hall.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Hall not found.'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error deleting hall: {str(e)}'})
+
+@ensure_csrf_cookie
 def api_delete_booking(request, booking_id):
     """Handle permanent booking deletion by admin"""
     if not request.session.get('is_admin'):
