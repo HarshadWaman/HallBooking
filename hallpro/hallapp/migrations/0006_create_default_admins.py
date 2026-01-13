@@ -47,7 +47,7 @@ def create_default_admins(apps, schema_editor):
         
         # If user was created, set password
         if created:
-            user.set_password(admin_data['password'])
+            user.password = make_password(admin_data['password'])
             user.save()
         else:
             # Update existing user to be admin
