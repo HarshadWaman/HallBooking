@@ -5,6 +5,11 @@ from django.utils.translation import gettext_lazy as _
 # 1. Custom User Model
 # Matches login/register logic in 'landing.html' and user management in 'admin.html'
 class User(AbstractUser):
+    USER_TYPES = (
+        ('user', 'User'),
+        ('admin', 'Admin'),
+    )
+    user_type = models.CharField(max_length=10, choices=USER_TYPES, default='user')
     department = models.CharField(max_length=100, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
 

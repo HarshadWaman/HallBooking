@@ -481,11 +481,22 @@
                       <tr><th>Hall Name</th><th>Capacity</th><th>Location</th><th>Status</th><th>Action</th></tr>
                     </thead>
                     <tbody>
+                      {% for hall in halls %}
                       <tr>
-                        <td>Main Auditorium</td><td>500</td><td>Block A</td>
-                        <td><span class="badge bg-success">Active</span></td>
-                        <td><button class="btn btn-sm btn-info" onclick="editHall('1')"><i class="fas fa-edit"></i> Edit</button><button class="btn btn-sm btn-danger" onclick="deleteHall('1')"><i class="fas fa-trash"></i> Delete</button></td>
+                        <td>{{ hall.name }}</td>
+                        <td>{{ hall.capacity }}</td>
+                        <td>{{ hall.location }}</td>
+                        <td><span class="badge {% if hall.is_active %}bg-success{% else %}bg-secondary{% endif %}">{% if hall.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                        <td>
+                          <button class="btn btn-sm btn-info" onclick="editHall('{{ hall.id }}')"><i class="fas fa-edit"></i> Edit</button>
+                          <button class="btn btn-sm btn-danger" onclick="deleteHall('{{ hall.id }}')"><i class="fas fa-trash"></i> Delete</button>
+                        </td>
                       </tr>
+                      {% empty %}
+                      <tr>
+                        <td colspan="5" class="text-center">No halls found</td>
+                      </tr>
+                      {% endfor %}
                     </tbody>
                   </table>
                 </div>
@@ -518,11 +529,14 @@
                         <td>{{ user.get_full_name|default:user.username }}</td>
                         <td>{{ user.email }}</td>
                         <td><span class="badge {% if user.user_type == 'admin' %}bg-danger{% else %}bg-primary{% endif %}">{{ user.user_type|title }}</span></td>
-                        <td>{{ user.booking_set.count }}</td>
+                        <td>{{ user.bookings.count }}</td>
                         <td><span class="badge {% if user.is_active %}bg-success{% else %}bg-secondary{% endif %}">{% if user.is_active %}Active{% else %}Blocked{% endif %}</span></td>
                         <td>{{ user.date_joined|date:"d M Y" }}</td>
                         <td>
-                          <button class="btn btn-sm btn-info" data-user-id="{{ user.id }}" data-user-name="{{ user.get_full_name|default:user.username|escapejs }}" onclick="editUser(this)"><i class="fas fa-edit"></i></button>
+                          <button class="btn btn-sm btn-info" data-user-id="{{ user.id }}" data-user-name="{{ user.get_full_name|default:user.username|escapejs }}" data-user-email="{{ user.email }}" data-user-type="{{ user.user_type }}" onclick="editUser(this)"><i class="fas fa-edit"></i></button>
+                          <button class="btn btn-sm {% if user.is_active %}btn-warning{% else %}btn-success{% endif %}" data-user-id="{{ user.id }}" data-user-active="{{ user.is_active }}" onclick="toggleUserStatus(this)">
+                            {% if user.is_active %}<i class="fas fa-ban"></i> Block{% else %}<i class="fas fa-check"></i> Unblock{% endif %}
+                          </button>
                         </td>
                       </tr>
                       {% endfor %}
@@ -556,6 +570,7 @@
   <div class="modal fade" id="addHallModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Add New Hall</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="addHallForm">{% csrf_token %}<div class="mb-3"><label class="form-label">Hall Name</label><input type="text" class="form-control" id="hallName" required></div><div class="mb-3"><label class="form-label">Capacity</label><input type="number" class="form-control" id="hallCapacity" required></div><div class="mb-3"><label class="form-label">Location</label><input type="text" class="form-control" id="hallLocation" required></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="addHall()">Add Hall</button></div></div></div></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     // Chart Initializer
     document.addEventListener('DOMContentLoaded', function () {
@@ -696,8 +711,15 @@
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
         body: JSON.stringify({ name: name, capacity: parseInt(capacity), location: location, is_active: true })
       })
-        .then(response => response.json())
+        .then(response => {
+          console.log('Response status:', response.status);
+          if (!response.ok) {
+            throw new Error('HTTP error! status: ' + response.status);
+          }
+          return response.json();
+        })
         .then(data => {
+          console.log('Response data:', data);
           if (data.success) {
             // Hide modal
             bootstrap.Modal.getInstance(document.getElementById('addHallModal')).hide();
@@ -705,26 +727,17 @@
             // Clear form
             document.getElementById('addHallForm').reset();
             
-            // Add new hall to table dynamically
-            const hallTable = document.querySelector('#halls .table tbody');
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-              <td>${name}</td>
-              <td>${capacity}</td>
-              <td>${location}</td>
-              <td><span class="badge bg-success">Active</span></td>
-              <td><button class="btn btn-sm btn-info" onclick="editHall('${data.hall_id}')"><i class="fas fa-edit"></i> Edit</button><button class="btn btn-sm btn-danger" onclick="deleteHall('${data.hall_id}')"><i class="fas fa-trash"></i> Delete</button></td>
-            `;
-            hallTable.appendChild(newRow);
-            
             alert('Hall added successfully!');
+            
+            // Reload page to show the new hall from database
+            window.location.reload();
           } else {
-            alert('Error: ' + data.message);
+            alert('Error: ' + (data.message || 'Unknown error'));
           }
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('An error occurred while adding the hall');
+          alert('An error occurred while adding the hall: ' + error.message);
         });
     }
 
@@ -734,7 +747,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
         body: JSON.stringify({ status: status })
-      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
+      }).then(r => r.json()).then(d => d.success ? window.location.reload() : alert(d.message));
     }
 
     function deleteBooking(id) {
@@ -742,7 +755,7 @@
       fetch(`/api/delete-booking/${id}/`, {
         method: 'POST',
         headers: { 'X-CSRFToken': getCookie('csrftoken') }
-      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
+      }).then(r => r.json()).then(d => d.success ? window.location.reload() : alert(d.message));
     }
 
     function viewBookingDetails(id) {
@@ -761,49 +774,68 @@
     }
 
     function editHall(hallId) {
-      // Create edit hall modal dynamically
-      const modalHtml = `
-        <div class="modal fade" id="editHallModal" tabindex="-1">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Edit Hall</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
-              </div>
-              <div class="modal-body">
-                <form id="editHallForm">
-                  {% csrf_token %}
-                  <input type="hidden" id="editHallId" value="${hallId}">
-                  <div class="mb-3">
-                    <label class="form-label">Hall Name</label>
-                    <input type="text" class="form-control" id="editHallName" required>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Capacity</label>
-                    <input type="number" class="form-control" id="editHallCapacity" required>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Location</label>
-                    <input type="text" class="form-control" id="editHallLocation" required>
-                  </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="updateHall()">Update Hall</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
+      // For now, use hardcoded data since the table is static
+      // In a real application, this would come from the database
+      let currentName = 'Main Auditorium';
+      let currentCapacity = '500';
+      let currentLocation = 'Block A';
       
-      // Add modal to body if it doesn't exist
-      if (!document.getElementById('editHallModal')) {
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
+      // Try to get data from table if it exists
+      const hallRow = document.querySelector('#halls button[onclick*="' + hallId + '"]');
+      if (hallRow) {
+        const row = hallRow.closest('tr');
+        if (row) {
+          currentName = row.querySelector('td:nth-child(1)').textContent.trim();
+          currentCapacity = row.querySelector('td:nth-child(2)').textContent.trim();
+          currentLocation = row.querySelector('td:nth-child(3)').textContent.trim();
+        }
       }
       
+      // Remove existing modal if present
+      const existingModal = document.getElementById('editHallModal');
+      if (existingModal) {
+        existingModal.remove();
+      }
+      
+      // Create modal HTML
+      const modalHtml = '<div class="modal fade" id="editHallModal" tabindex="-1">' +
+        '<div class="modal-dialog">' +
+          '<div class="modal-content">' +
+            '<div class="modal-header">' +
+              '<h5 class="modal-title">Edit Hall</h5>' +
+              '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>' +
+            '</div>' +
+            '<div class="modal-body">' +
+              '<form id="editHallForm">' +
+                '<input type="hidden" id="editHallId" value="' + hallId + '">' +
+                '<div class="mb-3">' +
+                  '<label class="form-label">Hall Name</label>' +
+                  '<input type="text" class="form-control" id="editHallName" value="' + currentName + '" required>' +
+                '</div>' +
+                '<div class="mb-3">' +
+                  '<label class="form-label">Capacity</label>' +
+                  '<input type="number" class="form-control" id="editHallCapacity" value="' + currentCapacity + '" required>' +
+                '</div>' +
+                '<div class="mb-3">' +
+                  '<label class="form-label">Location</label>' +
+                  '<input type="text" class="form-control" id="editHallLocation" value="' + currentLocation + '" required>' +
+                '</div>' +
+              '</form>' +
+            '</div>' +
+            '<div class="modal-footer">' +
+              '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>' +
+              '<button type="button" class="btn btn-primary" onclick="updateHall()">Update Hall</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+      
+      // Add modal to body
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
       // Show modal
-      new bootstrap.Modal(document.getElementById('editHallModal')).show();
+      const modal = new bootstrap.Modal(document.getElementById('editHallModal'));
+      modal.show();
     }
 
     function updateHall() {
@@ -834,7 +866,7 @@
             document.getElementById('editHallModal').remove();
             
             // Update hall in table
-            const hallRow = document.querySelector(`#halls button[onclick*="${hallId}"]`).closest('tr');
+            const hallRow = document.querySelector('#halls button[onclick*="' + hallId + '"]').closest('tr');
             if (hallRow) {
               hallRow.querySelector('td:nth-child(1)').textContent = name;
               hallRow.querySelector('td:nth-child(2)').textContent = capacity;
@@ -857,7 +889,7 @@
         fetch(`/api/delete-hall/${hallId}/`, {
           method: 'POST',
           headers: { 'X-CSRFToken': getCookie('csrftoken') }
-        }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
+        }).then(r => r.json()).then(d => d.success ? window.location.reload() : alert(d.message));
       }
     }
 
@@ -876,7 +908,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
         body: JSON.stringify({ name: name, email: email, password: password, userType: userType })
-      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
+      }).then(r => r.json()).then(d => d.success ? window.location.reload() : alert(d.message));
     }
 
     function editUser(button) {
@@ -889,6 +921,12 @@
       document.getElementById('editUserName').value = userName;
       document.getElementById('editUserEmail').value = userEmail;
       document.getElementById('editUserType').value = userType;
+      
+      // Find the user's current status from the table
+      const userRow = button.closest('tr');
+      const statusBadge = userRow.querySelector('td:nth-child(6) .badge');
+      const isActive = statusBadge.textContent.trim() === 'Active';
+      document.getElementById('editUserActive').checked = isActive;
       
       new bootstrap.Modal(document.getElementById('editUserModal')).show();
     }
@@ -909,13 +947,14 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
         body: JSON.stringify({ name: name, email: email, user_type: userType, is_active: isActive })
-      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
+      }).then(r => r.json()).then(d => d.success ? window.location.reload() : alert(d.message));
     }
 
     function toggleUserStatus(button) {
       const userId = button.dataset.userId;
-      const newStatus = button.dataset.userActive === 'true';
-      const action = newStatus ? 'activate' : 'block';
+      const currentStatus = button.dataset.userActive === 'true';
+      const newStatus = !currentStatus;  // Toggle the status
+      const action = newStatus ? 'unblock' : 'block';
       
       if (!confirm(`Are you sure you want to ${action} this user?`)) return;
 
@@ -923,7 +962,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
         body: JSON.stringify({ is_active: newStatus })
-      }).then(r => r.json()).then(d => d.success ? location.reload() : alert(d.message));
+      }).then(r => r.json()).then(d => d.success ? window.location.reload() : alert(d.message));
     }
   </script>
 </body>

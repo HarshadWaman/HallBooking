@@ -99,6 +99,7 @@ def api_register(request):
         # Note: We use email as username or generate a unique one if you prefer
         user = User.objects.create_user(username=email, email=email, password=password)
         user.first_name = name
+        user.user_type = 'user'  # Set default user type
         user.save()
 
         return JsonResponse({'success': True, 'message': 'Registration successful!'})
@@ -159,6 +160,7 @@ def api_add_user(request):
         try:
             user = User.objects.create_user(username=email, email=email, password=password)
             user.first_name = name
+            user.user_type = user_type  # Set the user type from form
             user.save()
             return JsonResponse({'success': True, 'message': 'User created successfully!'})
         except Exception as e:
@@ -189,6 +191,8 @@ def api_update_user(request, user_id):
             user.username = data['email']
         if 'is_active' in data:
             user.is_active = data['is_active']
+        if 'user_type' in data:
+            user.user_type = data['user_type']
         
         user.save()
         return JsonResponse({'success': True, 'message': 'User updated successfully!'})
@@ -300,6 +304,55 @@ def api_add_hall(request):
             return JsonResponse({'success': True, 'message': 'Hall added successfully!'})
         except Exception as e:
             return JsonResponse({'success': False, 'message': f'Error adding hall: {str(e)}'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+@ensure_csrf_cookie
+def api_delete_hall(request, hall_id):
+    """Handle hall deletion by admin"""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'})
+    
+    if request.method == "POST":
+        try:
+            hall = Hall.objects.get(id=hall_id)
+            hall.delete()
+            return JsonResponse({'success': True, 'message': 'Hall deleted successfully!'})
+        except Hall.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Hall not found.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error deleting hall: {str(e)}'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+@ensure_csrf_cookie
+def api_update_hall(request, hall_id):
+    """Handle hall updates by admin"""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'})
+    
+    try:
+        hall = Hall.objects.get(id=hall_id)
+    except Hall.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Hall not found.'})
+    
+    if request.method == "POST":
+        data = json.loads(request.body)
+        name = data.get('name')
+        capacity = data.get('capacity')
+        location = data.get('location')
+        
+        if not name or not capacity or not location:
+            return JsonResponse({'success': False, 'message': 'All required fields must be provided'})
+        
+        try:
+            hall.name = name
+            hall.capacity = int(capacity)
+            hall.location = location
+            hall.save()
+            return JsonResponse({'success': True, 'message': 'Hall updated successfully!'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error updating hall: {str(e)}'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
@@ -462,6 +515,7 @@ def admin_dashboard(request):
         'total_bookings': Booking.objects.count(),
         'pending_bookings': Booking.objects.filter(status='PENDING').count(),
         'users_count': User.objects.count(),
+        'halls': Hall.objects.all().order_by('-id'),
         'recent_bookings': Booking.objects.select_related('user', 'hall').exclude(status='CANCELLED').annotate(
             status_order=Case(
                 When(status='PENDING', then=Value(1)),
