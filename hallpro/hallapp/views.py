@@ -148,8 +148,10 @@ def admin_login_api(request):
             
         except Exception as e:
             # Log the error for debugging
+            import traceback
             print(f"Admin login error: {str(e)}")
-            return JsonResponse({'success': False, 'message': 'Server error occurred.'}, status=500)
+            print(f"Traceback: {traceback.format_exc()}")
+            return JsonResponse({'success': False, 'message': f'Server error: {str(e)}'}, status=500)
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
