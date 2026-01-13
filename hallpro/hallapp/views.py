@@ -83,21 +83,41 @@ def api_login(request):
 def api_register(request):
     """Handles AJAX register requests from landing.html"""
     if request.method == "POST":
-        data = json.loads(request.body)
-        name = data.get('name')
-        email = data.get('email')
-        password = data.get('password')
+        try:
+            # Try to parse JSON first
+            try:
+                data = json.loads(request.body)
+            except (json.JSONDecodeError, TypeError):
+                # If JSON fails, try form data
+                data = {
+                    'name': request.POST.get('name'),
+                    'email': request.POST.get('email'),
+                    'password': request.POST.get('password')
+                }
+            
+            name = data.get('name')
+            email = data.get('email')
+            password = data.get('password')
+            
+            if not name or not email or not password:
+                return JsonResponse({'success': False, 'message': 'All fields are required.'})
 
-        if User.objects.filter(email=email).exists():
-            return JsonResponse({'success': False, 'message': 'Email already registered.'})
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({'success': False, 'message': 'Email already registered.'})
 
-        # Create user
-        # Note: We use email as username or generate a unique one if you prefer
-        user = User.objects.create_user(username=email, email=email, password=password)
-        user.first_name = name
-        user.save()
+            # Create user
+            # Note: We use email as username or generate a unique one if you prefer
+            user = User.objects.create_user(username=email, email=email, password=password)
+            user.first_name = name
+            user.save()
 
-        return JsonResponse({'success': True, 'message': 'Registration successful!'})
+            return JsonResponse({'success': True, 'message': 'Registration successful!'})
+            
+        except Exception as e:
+            import traceback
+            print(f"Registration error: {str(e)}")
+            print(f"Traceback: {traceback.format_exc()}")
+            return JsonResponse({'success': False, 'message': f'Registration error: {str(e)}'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
