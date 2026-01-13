@@ -113,20 +113,38 @@ def logout_view(request):
 def admin_login_api(request):
     """Handle admin login via API"""
     if request.method == "POST":
-        data = json.loads(request.body)
-        email = data.get('email')
-        password = data.get('password')
-        
-        # Check hardcoded admin credentials
-        for admin in HARDCODED_ADMINS:
-            if admin['email'] == email and admin['password'] == password:
-                # Create session for admin
-                request.session['admin_user'] = admin
-                request.session['is_admin'] = True
-                
-                return JsonResponse({'success': True, 'redirect': reverse('admin-dashboard')})
-        
-        return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
+        try:
+            # Try to parse JSON first
+            try:
+                data = json.loads(request.body)
+            except (json.JSONDecodeError, TypeError):
+                # If JSON fails, try form data
+                data = {
+                    'email': request.POST.get('email'),
+                    'password': request.POST.get('password')
+                }
+            
+            email = data.get('email')
+            password = data.get('password')
+            
+            if not email or not password:
+                return JsonResponse({'success': False, 'message': 'Email and password are required.'})
+            
+            # Check hardcoded admin credentials
+            for admin in HARDCODED_ADMINS:
+                if admin['email'] == email and admin['password'] == password:
+                    # Create session for admin
+                    request.session['admin_user'] = admin
+                    request.session['is_admin'] = True
+                    
+                    return JsonResponse({'success': True, 'redirect': reverse('admin-dashboard')})
+            
+            return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
+            
+        except Exception as e:
+            # Log the error for debugging
+            print(f"Admin login error: {str(e)}")
+            return JsonResponse({'success': False, 'message': 'Server error occurred.'}, status=500)
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
