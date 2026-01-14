@@ -9,7 +9,11 @@ from django.db.models import Q, Case, When, Value
 from django.utils import timezone
 from .models import User, Hall, Booking
 
-# Admin credentials are now stored in database
+# Hardcoded admin credentials
+HARDCODED_ADMINS = [
+    {'username': 'harshad', 'password': '9011818144', 'email': 'harshadwaman4@gmail.com', 'name': 'Harshad'},
+    {'username': 'nayan', 'password': 'nayan2105', 'email': 'nayanpatilnp11@gmail.com', 'name': 'Nayan'},
+]
 
 # ===========================
 # Public Pages
@@ -42,27 +46,27 @@ def api_login(request):
         password = data.get('password')
         user_type = data.get('userType') # 'admin' or 'user'
 
-        # Check admin credentials from database
+        # Check hardcoded admin credentials first
         if user_type == 'admin':
-            try:
-                admin_user = User.objects.get(email=email, user_type='admin')
-                user = authenticate(username=admin_user.username, password=password)
-                
-                if user is not None:
+            for admin in HARDCODED_ADMINS:
+                if admin['email'] == email and admin['password'] == password:
+                    # Create a temporary user object for session
+                    from django.contrib.auth.models import AnonymousUser
+                    user = AnonymousUser()
+                    user.username = admin['username']
+                    user.email = admin['email']
+                    user.first_name = admin['name']
+                    user.user_type = 'admin'
+                    user.is_authenticated = True
+                    
                     # Store admin info in session
-                    request.session['admin_user'] = {
-                        'username': user.username,
-                        'email': user.email,
-                        'name': user.get_full_name() or user.first_name
-                    }
+                    request.session['admin_user'] = admin
                     request.session['is_admin'] = True
                     
                     login(request, user)
                     return JsonResponse({'success': True, 'redirect': reverse('admin-dashboard')})
-                else:
-                    return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
-            except User.DoesNotExist:
-                return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
+            
+            return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
         
         # Handle regular user login
         try:
@@ -83,41 +87,22 @@ def api_login(request):
 def api_register(request):
     """Handles AJAX register requests from landing.html"""
     if request.method == "POST":
-        try:
-            # Try to parse JSON first
-            try:
-                data = json.loads(request.body)
-            except (json.JSONDecodeError, TypeError):
-                # If JSON fails, try form data
-                data = {
-                    'name': request.POST.get('name'),
-                    'email': request.POST.get('email'),
-                    'password': request.POST.get('password')
-                }
-            
-            name = data.get('name')
-            email = data.get('email')
-            password = data.get('password')
-            
-            if not name or not email or not password:
-                return JsonResponse({'success': False, 'message': 'All fields are required.'})
+        data = json.loads(request.body)
+        name = data.get('name')
+        email = data.get('email')
+        password = data.get('password')
 
-            if User.objects.filter(email=email).exists():
-                return JsonResponse({'success': False, 'message': 'Email already registered.'})
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'success': False, 'message': 'Email already registered.'})
 
-            # Create user
-            # Note: We use email as username or generate a unique one if you prefer
-            user = User.objects.create_user(username=email, email=email, password=password)
-            user.first_name = name
-            user.save()
+        # Create user
+        # Note: We use email as username or generate a unique one if you prefer
+        user = User.objects.create_user(username=email, email=email, password=password)
+        user.first_name = name
+        user.user_type = 'user'  # Set default user type
+        user.save()
 
-            return JsonResponse({'success': True, 'message': 'Registration successful!'})
-            
-        except Exception as e:
-            import traceback
-            print(f"Registration error: {str(e)}")
-            print(f"Traceback: {traceback.format_exc()}")
-            return JsonResponse({'success': False, 'message': f'Registration error: {str(e)}'})
+        return JsonResponse({'success': True, 'message': 'Registration successful!'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
@@ -129,49 +114,20 @@ def logout_view(request):
 def admin_login_api(request):
     """Handle admin login via API"""
     if request.method == "POST":
-        try:
-            # Try to parse JSON first
-            try:
-                data = json.loads(request.body)
-            except (json.JSONDecodeError, TypeError):
-                # If JSON fails, try form data
-                data = {
-                    'email': request.POST.get('email'),
-                    'password': request.POST.get('password')
-                }
-            
-            email = data.get('email')
-            password = data.get('password')
-            
-            if not email or not password:
-                return JsonResponse({'success': False, 'message': 'Email and password are required.'})
-            
-            # Check admin credentials from database
-            try:
-                admin_user = User.objects.get(email=email, user_type='admin')
-                user = authenticate(username=admin_user.username, password=password)
+        data = json.loads(request.body)
+        email = data.get('email')
+        password = data.get('password')
+        
+        # Check hardcoded admin credentials
+        for admin in HARDCODED_ADMINS:
+            if admin['email'] == email and admin['password'] == password:
+                # Create session for admin
+                request.session['admin_user'] = admin
+                request.session['is_admin'] = True
                 
-                if user is not None:
-                    # Store admin info in session
-                    request.session['admin_user'] = {
-                        'username': user.username,
-                        'email': user.email,
-                        'name': user.get_full_name() or user.first_name
-                    }
-                    request.session['is_admin'] = True
-                    
-                    return JsonResponse({'success': True, 'redirect': reverse('admin-dashboard')})
-                else:
-                    return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
-            except User.DoesNotExist:
-                return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
-            
-        except Exception as e:
-            # Log the error for debugging
-            import traceback
-            print(f"Admin login error: {str(e)}")
-            print(f"Traceback: {traceback.format_exc()}")
-            return JsonResponse({'success': False, 'message': f'Server error: {str(e)}'}, status=500)
+                return JsonResponse({'success': True, 'redirect': reverse('admin-dashboard')})
+        
+        return JsonResponse({'success': False, 'message': 'Invalid admin credentials.'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
@@ -204,6 +160,7 @@ def api_add_user(request):
         try:
             user = User.objects.create_user(username=email, email=email, password=password)
             user.first_name = name
+            user.user_type = user_type  # Set the user type from form
             user.save()
             return JsonResponse({'success': True, 'message': 'User created successfully!'})
         except Exception as e:
@@ -234,6 +191,8 @@ def api_update_user(request, user_id):
             user.username = data['email']
         if 'is_active' in data:
             user.is_active = data['is_active']
+        if 'user_type' in data:
+            user.user_type = data['user_type']
         
         user.save()
         return JsonResponse({'success': True, 'message': 'User updated successfully!'})
@@ -349,8 +308,26 @@ def api_add_hall(request):
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 @ensure_csrf_cookie
+def api_delete_hall(request, hall_id):
+    """Handle hall deletion by admin"""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'})
+    
+    if request.method == "POST":
+        try:
+            hall = Hall.objects.get(id=hall_id)
+            hall.delete()
+            return JsonResponse({'success': True, 'message': 'Hall deleted successfully!'})
+        except Hall.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Hall not found.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error deleting hall: {str(e)}'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+@ensure_csrf_cookie
 def api_update_hall(request, hall_id):
-    """Handle updating hall by admin"""
+    """Handle hall updates by admin"""
     if not request.session.get('is_admin'):
         return JsonResponse({'success': False, 'message': 'Unauthorized'})
     
@@ -361,35 +338,23 @@ def api_update_hall(request, hall_id):
     
     if request.method == "POST":
         data = json.loads(request.body)
+        name = data.get('name')
+        capacity = data.get('capacity')
+        location = data.get('location')
         
-        if 'name' in data:
-            hall.name = data['name']
-        if 'capacity' in data:
-            hall.capacity = int(data['capacity'])
-        if 'location' in data:
-            hall.location = data['location']
-        if 'is_active' in data:
-            hall.is_active = data['is_active']
+        if not name or not capacity or not location:
+            return JsonResponse({'success': False, 'message': 'All required fields must be provided'})
         
-        hall.save()
-        return JsonResponse({'success': True, 'message': 'Hall updated successfully!'})
+        try:
+            hall.name = name
+            hall.capacity = int(capacity)
+            hall.location = location
+            hall.save()
+            return JsonResponse({'success': True, 'message': 'Hall updated successfully!'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error updating hall: {str(e)}'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-
-@ensure_csrf_cookie
-def api_delete_hall(request, hall_id):
-    """Handle deleting hall by admin"""
-    if not request.session.get('is_admin'):
-        return JsonResponse({'success': False, 'message': 'Unauthorized'})
-    
-    try:
-        hall = Hall.objects.get(id=hall_id)
-        hall.delete()
-        return JsonResponse({'success': True, 'message': 'Hall deleted successfully!'})
-    except Hall.DoesNotExist:
-        return JsonResponse({'success': False, 'message': 'Hall not found.'})
-    except Exception as e:
-        return JsonResponse({'success': False, 'message': f'Error deleting hall: {str(e)}'})
 
 @ensure_csrf_cookie
 def api_delete_booking(request, booking_id):
@@ -550,6 +515,7 @@ def admin_dashboard(request):
         'total_bookings': Booking.objects.count(),
         'pending_bookings': Booking.objects.filter(status='PENDING').count(),
         'users_count': User.objects.count(),
+        'halls': Hall.objects.all().order_by('-id'),
         'recent_bookings': Booking.objects.select_related('user', 'hall').exclude(status='CANCELLED').annotate(
             status_order=Case(
                 When(status='PENDING', then=Value(1)),

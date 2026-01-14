@@ -5,28 +5,16 @@ from django.utils.translation import gettext_lazy as _
 # 1. Custom User Model
 # Matches login/register logic in 'landing.html' and user management in 'admin.html'
 class User(AbstractUser):
-    USER_TYPE_CHOICES = (
-        ('user', 'Regular User'),
-        ('admin', 'Administrator'),
+    USER_TYPES = (
+        ('user', 'User'),
+        ('admin', 'Admin'),
     )
-    
+    user_type = models.CharField(max_length=10, choices=USER_TYPES, default='user')
     department = models.CharField(max_length=100, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
-    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='user')
 
     def __str__(self):
-        return f"{self.username} ({self.get_user_type_display()})"
-
-# 1.1 Admin Model (for additional admin-specific fields)
-class Admin(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_profile')
-    admin_code = models.CharField(max_length=20, unique=True, help_text="Unique admin identifier")
-    department = models.CharField(max_length=100, blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"Admin: {self.user.get_full_name() or self.user.username}"
+        return f"{self.username}"
 
 # 2. Hall Model
 # Stores data for halls shown in 'index.html' and managed in 'admin.html'
