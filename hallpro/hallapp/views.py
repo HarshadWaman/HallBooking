@@ -20,8 +20,8 @@ HARDCODED_ADMINS = [
 # ===========================
 
 def index(request):
-    # Fetch all halls to display on homepage (no status filtering)
-    halls = Hall.objects.all()
+    # Fetch active halls to display on homepage
+    halls = Hall.objects.filter(is_active=True)
     return render(request, 'index.html', {'halls': halls})
 
 # ===========================
@@ -341,6 +341,7 @@ def api_update_hall(request, hall_id):
         name = data.get('name')
         capacity = data.get('capacity')
         location = data.get('location')
+        is_active = data.get('is_active')
         
         if not name or not capacity or not location:
             return JsonResponse({'success': False, 'message': 'All required fields must be provided'})
@@ -349,6 +350,8 @@ def api_update_hall(request, hall_id):
             hall.name = name
             hall.capacity = int(capacity)
             hall.location = location
+            if is_active is not None:
+                hall.is_active = is_active
             hall.save()
             return JsonResponse({'success': True, 'message': 'Hall updated successfully!'})
         except Exception as e:
@@ -496,7 +499,7 @@ def booking_view(request):
         except Hall.DoesNotExist:
             selected_hall = None
     
-    halls = Hall.objects.all()
+    halls = Hall.objects.filter(is_active=True)
     context = {
         'halls': halls,
         'selected_hall': selected_hall,

@@ -343,7 +343,8 @@
                 venueNames: {
                     "Main Auditorium": "मुख्य सभागृह",
                     "Sai Baba Hall": "साई बाबा हॉल",
-                    "New Seminar Hall": "न्यु सेमिनार हॉल"
+                    "New Seminar Hall": "न्यु सेमिनार हॉल",
+                    "Bafna Hall": "बाफना हॉल"
                 }
             },
             en: {
@@ -367,7 +368,8 @@
                 venueNames: {
                     "Main Auditorium": "Main Auditorium",
                     "Sai Baba Hall": "Sai Baba Hall",
-                    "New Seminar Hall": "New Seminar Hall"
+                    "New Seminar Hall": "New Seminar Hall",
+                    "Bafna Hall": "Bafna Hall"
                 }
             }
         };
@@ -496,7 +498,41 @@
             });
         }
 
-        window.onload = switchLanguage;
+        window.onload = function() {
+            switchLanguage();
+            autoFillFromURL();
+        };
+
+        function autoFillFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const hallName = urlParams.get('hall');
+            const selectedDate = urlParams.get('date');
+            
+            // Auto-fill date if provided
+            if (selectedDate) {
+                document.getElementById('dateInput').value = selectedDate;
+                updateDay();
+            }
+            
+            // Auto-select hall if provided
+            if (hallName) {
+                const venueSelect = document.getElementById('venueSelect');
+                // Find the option with matching data-orig attribute (original English name)
+                for (let i = 0; i < venueSelect.options.length; i++) {
+                    const option = venueSelect.options[i];
+                    const origName = option.getAttribute('data-orig');
+                    if (origName && origName.trim() === hallName.trim()) {
+                        venueSelect.selectedIndex = i;
+                        break;
+                    }
+                    // Also check if the current text matches (for English language)
+                    if (option.text.trim() === hallName.trim()) {
+                        venueSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
