@@ -20,8 +20,8 @@ HARDCODED_ADMINS = [
 # ===========================
 
 def index(request):
-    # Fetch active halls to display on homepage
-    halls = Hall.objects.filter(is_active=True)
+    # Fetch all halls to display on homepage (no status filtering)
+    halls = Hall.objects.all()
     return render(request, 'index.html', {'halls': halls})
 
 # ===========================
@@ -432,7 +432,6 @@ def api_update_booking_status(request, booking_id):
 # Booking Logic
 # ===========================
 
-@login_required
 def booking_view(request):
     if request.method == "POST":
         # Extract data from form
@@ -485,9 +484,26 @@ def booking_view(request):
             print(f"Error: {e}")
             return JsonResponse({'success': False, 'message': f'Error submitting form: {str(e)}'})
 
-    # GET request - Render the form
+    # GET request - Handle query parameters from index.html
+    hall_name = request.GET.get('hall', '')
+    selected_date = request.GET.get('date', '')
+    
+    # Get the hall object if hall name is provided
+    selected_hall = None
+    if hall_name:
+        try:
+            selected_hall = Hall.objects.get(name=hall_name)
+        except Hall.DoesNotExist:
+            selected_hall = None
+    
     halls = Hall.objects.all()
-    return render(request, 'booking.html', {'halls': halls})
+    context = {
+        'halls': halls,
+        'selected_hall': selected_hall,
+        'selected_date': selected_date,
+        'hall_name': hall_name
+    }
+    return render(request, 'booking.html', context)
 
 @login_required
 def my_bookings(request):
@@ -498,6 +514,24 @@ def my_bookings(request):
 # ===========================
 # Admin Dashboard
 # ===========================
+
+@login_required
+def booking_details_view(request, booking_id):
+    """Display detailed booking information"""
+    try:
+        booking = Booking.objects.select_related('user', 'hall').get(id=booking_id)
+        
+        # Check if user is admin or the booking owner
+        is_admin = request.session.get('is_admin')
+        is_owner = booking.user == request.user
+        
+        if not (is_admin or is_owner):
+            return redirect('index')  # Unauthorized access
+        
+        context = {'booking': booking}
+        return render(request, 'booking_details.html', context)
+    except Booking.DoesNotExist:
+        return redirect('index')  # Booking not found
 
 def admin_dashboard(request):
     # Security check: Ensure only admins can access

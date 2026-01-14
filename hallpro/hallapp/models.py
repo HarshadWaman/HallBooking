@@ -19,13 +19,18 @@ class User(AbstractUser):
 # 2. Hall Model
 # Stores data for halls shown in 'index.html' and managed in 'admin.html'
 class Hall(models.Model):
+    STATUS_CHOICES = (
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+    )
+    
     name = models.CharField(max_length=100)  # e.g., "Main Auditorium"
     capacity = models.IntegerField()         # e.g., 500
     location = models.CharField(max_length=100) # e.g., "Block A"
     description = models.TextField(blank=True)
     facilities = models.CharField(max_length=255, help_text="e.g., AC, Sound System, WiFi")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     # image = models.ImageField(upload_to='halls/', blank=True, null=True)  # Temporarily commented
-    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

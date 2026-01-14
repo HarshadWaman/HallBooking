@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hall Booking Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #64748b;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px 0;
+    }
+
+    .form-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      position: relative;
+    }
+
+    .header-wrapper {
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .college-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+      object-fit: cover;
+      border: 3px solid var(--primary-color);
+    }
+
+    #college-name {
+      font-weight: 700;
+      color: #1e293b;
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+    }
+
+    .form-title {
+      background: #eff6ff;
+      color: var(--primary-color);
+      padding: 5px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: inline-block;
+      border: 1px solid #dbeafe;
+    }
+
+    .section-header {
+      font-weight: 600;
+      color: #475569;
+      margin: 25px 0 15px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-header::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #475569;
+      min-width: 200px;
+    }
+
+    .detail-value {
+      color: #1e293b;
+      flex: 1;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 12px;
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .notice-section {
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-left: 5px solid #f59e0b;
+      padding: 20px;
+      font-size: 14px;
+      border-radius: 8px;
+      margin: 30px 0;
+      line-height: 1.6;
+      color: #92400e;
+      text-align: justify;
+    }
+
+    .sig-container {
+      margin-top: 50px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      padding-top: 40px;
+    }
+
+    .sig-box {
+      width: 250px;
+      text-align: center;
+      border-top: 1px solid #000;
+      padding-top: 5px;
+      font-size: 13px;
+    }
+
+    .signature-image {
+      max-width: 150px;
+      height: auto;
+      display: block;
+      margin: 0 auto -15px auto;
+    }
+
+    .verified-stamp {
+      color: #059669;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border: 2px solid #059669;
+      padding: 2px 5px;
+      display: inline-block;
+      margin-bottom: 5px;
+      transform: rotate(-5deg);
+    }
+
+    .status-badge {
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .form-container {
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .notice-section {
+        border: 1px solid #ccc;
+        background: transparent;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark no-print"
+    style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%) !important;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'index' %}">🎓 Sangamner College</a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <button class="btn btn-dark" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        {% if request.user.user_type == 'admin' %}
+        <a href="{% url 'admin-dashboard' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Admin
+          Dashboard</a>
+        {% else %}
+        <a href="{% url 'mybooking' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to My
+          Bookings</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <div class="form-container">
+    <div class="header-wrapper">
+      <img src="/static/images/sangamner.jpg" alt="Logo" class="college-logo">
+      <h5 id="college-name">संगमनेर नगरपालिका कला, दा.ज.मालपाणी वाणिज्य आणि ब.ना.सारडा विज्ञान महाविद्यालय, संगमनेर</h5>
+      <div class="form-title">सभागृह / हॉल नोंदणी अर्ज (Hall Booking Details)</div>
+    </div>
+
+    <!-- Status Badge -->
+    <div class="text-center mb-4">
+      <span class="status-badge 
+                {% if booking.status == 'PENDING' %}status-pending
+                {% elif booking.status == 'APPROVED' %}status-approved
+                {% elif booking.status == 'REJECTED' %}status-rejected
+                {% endif %}">
+        {{ booking.status }}
+      </span>
+    </div>
+
+    <!-- Basic Details -->
+    <div class="section-header">मूलभूत माहिती / Basic Details</div>
+    <div class="detail-row">
+      <span class="detail-label">दिनांक / Date:</span>
+      <span class="detail-value">{{ booking.booking_date|date:"d M Y" }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">वेळ / Time:</span>
+      <span class="detail-value">{{ booking.start_time }} - {{ booking.end_time }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">कार्यक्रमाचे नांव / Event:</span>
+      <span class="detail-value">{{ booking.event_name }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">समन्वयक / Coordinator:</span>
+      <span class="detail-value">{{ booking.coordinator_name }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">विभाग / Department:</span>
+      <span class="detail-value">{{ booking.department }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">मोबाईल / Mobile:</span>
+      <span class="detail-value">{{ booking.coordinator_mobile }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">स्थळ / Venue:</span>
+      <span class="detail-value">{{ booking.hall.name }}</span>
+    </div>
+
+    <!-- Requirements -->
+    <div class="section-header">आवश्यकता / Requirements</div>
+    <div class="detail-row">
+      <span class="detail-label">प्रेक्षक संख्या / Attendees:</span>
+      <span class="detail-value">{{ booking.audience_count }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">स्टेज आकार / Stage Size:</span>
+      <span class="detail-value">{{ booking.stage_size }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">खुर्ची / Chairs:</span>
+      <span class="detail-value">{{ booking.chair_type }} - {{ booking.chair_count }}</span>
+    </div>
+
+    <!-- Equipment -->
+    <div class="section-header">उपकरणे / Equipment</div>
+    <div class="detail-row">
+      <span class="detail-label">माईक / Mic:</span>
+      <span class="detail-value">{{ booking.mic_count }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">स्पीकर / Speaker:</span>
+      <span class="detail-value">{{ booking.speaker_count }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">प्रोजेक्टर / Projector:</span>
+      <span class="detail-value">{{ booking.projector_count }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">लॅपटॉप / Laptop:</span>
+      <span class="detail-value">{{ booking.laptop_count }}</span>
+    </div>
+
+    <!-- Traditional Items -->
+    <div class="section-header">पारंपरिक साहित्य / Traditional Items</div>
+    <div class="checkbox-grid">
+      {% if booking.req_agarbatti %}<div>✓ अगरबत्ती</div>{% endif %}
+      {% if booking.req_matchbox %}<div>✓ काडीपेटी</div>{% endif %}
+      {% if booking.req_oil %}<div>✓ तेल</div>{% endif %}
+      {% if booking.req_wati %}<div>✓ वाती</div>{% endif %}
+      {% if booking.req_kapur %}<div>✓ कापूर</div>{% endif %}
+      {% if booking.req_satarangi %}<div>✓ {{ booking.req_satarangi }}</div>{% endif %}
+      {% if booking.req_carpet %}<div>✓ कारपेट</div>{% endif %}
+      {% if booking.req_mandap %}<div>✓ मंडप</div>{% endif %}
+      {% if booking.req_saraswati_photo %}<div>✓ सरस्वती</div>{% endif %}
+      {% if booking.req_samai %}<div>✓ समाई</div>{% endif %}
+    </div>
+
+    <!-- Notice -->
+    <div class="notice-section">
+      <strong>सूचना -</strong>
+      <ol>
+        <li>कार्यक्रमासाठी आवश्यक असणाऱ्या सर्व बाबींची पूर्तता करण्यासाठी कार्यक्रम प्रमुख / समन्वयक यांनी
+          कार्यक्रमाच्या एक दिवस अगोदर पूर्वसूचना द्याव्यात.</li>
+        <li>सुट्टीच्या व्यतिरिक्त हॉल उपलब्ध करण्याची जबाबदारी संस्था कार्यालयाची राहील. प्रथम आलेल्या अर्जास प्राधान्य
+          दिले जाईल.</li>
+        <li>कार्यक्रमासाठी लागणाऱ्या सर्व बाबींचे नियोजन कार्यक्रम प्रमुख / समन्वयक यांची राहील याची नोंद घ्यावी.</li>
+      </ol>
+      <strong>(सभागृहातील नुकसानीस कार्यक्रम प्रमुख / समन्वयक जबाबदार असतील.)</strong>
+    </div>
+
+    <!-- Digital Signatures -->
+    <div class="sig-container">
+      <div class="sig-box">
+        {% if booking.status == 'APPROVED' %}
+        <div class="verified-stamp">Verified by Office</div>
+        {% endif %}
+        <div>मुख्य कार्यकारी अधिकारी, संस्था कार्यालय</div>
+      </div>
+
+      <div class="sig-box">
+        {% if booking.status == 'APPROVED' %}
+        <img src="/static/images/principal_sign.png" class="signature-image" alt="Principal Sign">
+        {% else %}
+        <div style="height: 50px;"></div>
+        {% endif %}
+        <div>प्राचार्य</div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

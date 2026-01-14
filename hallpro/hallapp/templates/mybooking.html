@@ -1041,86 +1041,8 @@
       // Clean booking ID (remove # prefix)
       const cleanBookingId = bookingId.replace('#', '');
 
-      // Find booking card by looking for the booking ID in the booking-id span
-      const bookingCards = document.querySelectorAll('.booking-card');
-      let bookingCard = null;
-
-      for (let card of bookingCards) {
-        const bookingIdSpan = card.querySelector('.booking-id');
-        if (bookingIdSpan && bookingIdSpan.textContent.includes(cleanBookingId)) {
-          bookingCard = card;
-          break;
-        }
-      }
-
-      if (!bookingCard) {
-        console.error('Booking card not found for ID:', bookingId);
-        return;
-      }
-
-      // Extract details from the booking card
-      const hallName = bookingCard.querySelector('.hall-name').textContent.trim();
-      const bookingDate = bookingCard.querySelector('.detail-value').textContent.trim();
-      const timeSlot = bookingCard.querySelectorAll('.detail-value')[1].textContent.trim();
-      const bookedBy = bookingCard.querySelectorAll('.detail-value')[2].textContent.trim();
-      const eventName = bookingCard.querySelectorAll('.detail-value')[3].textContent.trim();
-      const statusBadge = bookingCard.querySelector('.status-badge').outerHTML;
-
-      const detailsHtml = `
-        <div class="booking-details-modal">
-          <h4>Booking Details</h4>
-          <div class="row">
-            <div class="col-md-6">
-              <p><strong>Booking ID:</strong> ${cleanBookingId}</p>
-              <p><strong>Event Name:</strong> ${eventName}</p>
-              <p><strong>Hall:</strong> ${hallName.replace('Hall', '').trim()}</p>
-              <p><strong>Date:</strong> ${bookingDate}</p>
-              <p><strong>Time:</strong> ${timeSlot}</p>
-              <p><strong>Status:</strong> ${statusBadge}</p>
-            </div>
-            <div class="col-md-6">
-              <p><strong>Booked By:</strong> ${bookedBy}</p>
-            </div>
-          </div>
-        </div>
-      `;
-
-      // Create modal if it doesn't exist
-      let modal = document.getElementById('bookingDetailsModal');
-      if (!modal) {
-        modal = document.createElement('div');
-        modal.className = 'modal fade';
-        modal.id = 'bookingDetailsModal';
-        modal.innerHTML = `
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Booking Details</h5>
-                <button type="button" class="btn-close" onclick="closeBookingDetails()">&times;</button>
-              </div>
-              <div class="modal-body" id="bookingDetailsContent">
-                <!-- Content will be inserted here -->
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeBookingDetails()">Close</button>
-              </div>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(modal);
-      }
-
-      document.getElementById('bookingDetailsContent').innerHTML = detailsHtml;
-      modal.style.display = 'block';
-      modal.classList.add('show');
-    }
-
-    function closeBookingDetails() {
-      const modal = document.getElementById('bookingDetailsModal');
-      if (modal) {
-        modal.style.display = 'none';
-        modal.classList.remove('show');
-      }
+      // Navigate to the detailed booking page
+      window.open(`/booking-details/${cleanBookingId}/`, '_blank');
     }
 
     function cancelBooking(bookingId) {

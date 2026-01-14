@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/update-booking/<int:booking_id>/', views.api_update_booking_status, name='api-update-booking'),
     path('logout/', views.logout_view, name='logout'),
     path('mybooking/', views.my_bookings, name='mybooking'),
+    path('booking-details/<int:booking_id>/', views.booking_details_view, name='booking-details'),
 ]
