@@ -603,45 +603,31 @@
   <div class="container">
     <h3 class="results-title" id="results-label">Available Halls for <span id="display-date"></span></h3>
     <div class="row" id="hall-results">
-      <!-- Hall 1 -->
+      {% for hall in halls %}
       <div class="col-md-4">
-        <div class="hall-card" data-hall-id="1">
+        <div class="hall-card" data-hall-id="{{ hall.id }}">
+          {% if hall.image %}
+          <img src="{{ hall.image.url }}" alt="{{ hall.name }}" class="hall-image">
+          {% else %}
           <img src="https://images.unsplash.com/photo-1505236858219-8359eb29e329?ixlib=rb-4.0.3&w=800"
-            alt="Main Auditorium" class="hall-image">
+            alt="{{ hall.name }}" class="hall-image">
+          {% endif %}
           <div class="hall-content">
-            <h3 class="hall-name">Main Auditorium</h3>
-            <p class="hall-info"><strong>Capacity:</strong> 500 People<br><strong>Facilities:</strong> AC, Sound System
-            </p>
-            <button class="btn book-btn" onclick="bookHall('Main Auditorium')">Book Now</button>
+            <h3 class="hall-name">{{ hall.name }}</h3>
+            <p class="hall-info"><strong>Capacity:</strong> {{ hall.capacity }} People<br><strong>Location:</strong> {{
+              hall.location }}<br><strong>Facilities:</strong> {{ hall.facilities }}</p>
+            <button class="btn book-btn" onclick="bookHall('{{ hall.name }}')">Book Now</button>
           </div>
         </div>
       </div>
-
-      <!-- Hall 2 -->
-      <div class="col-md-4">
-        <div class="hall-card" data-hall-id="2">
-          <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&w=800"
-            alt="Conference Hall" class="hall-image">
-          <div class="hall-content">
-            <h3 class="hall-name">Sai Baba Hall</h3>
-            <p class="hall-info"><strong>Capacity:</strong> 150 People<br><strong>Facilities:</strong> AC, WiFi</p>
-            <button class="btn book-btn" onclick="bookHall('Conference Hall')">Book Now</button>
-          </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="alert alert-info text-center">
+          <h4>No halls available</h4>
+          <p>Please check back later or contact admin for more information.</p>
         </div>
       </div>
-
-      <!-- Hall 3 -->
-      <div class="col-md-4">
-        <div class="hall-card" data-hall-id="3">
-          <img src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?ixlib=rb-4.0.3&w=800"
-            alt="Seminar Hall" class="hall-image">
-          <div class="hall-content">
-            <h3 class="hall-name">Seminar Hall</h3>
-            <p class="hall-info"><strong>Capacity:</strong> 100 People<br><strong>Facilities:</strong> AC, Projector</p>
-            <button class="btn book-btn" onclick="bookHall('Seminar Hall')">Book Now</button>
-          </div>
-        </div>
-      </div>
+      {% endfor %}
     </div>
   </div>
 
