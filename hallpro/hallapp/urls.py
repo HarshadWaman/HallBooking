@@ -21,6 +21,12 @@ urlpatterns = [
     path('api/delete-hall/<int:hall_id>/', views.api_delete_hall, name='api-delete-hall'),
     path('api/delete-booking/<int:booking_id>/', views.api_delete_booking, name='api-delete-booking'),
     path('api/update-booking/<int:booking_id>/', views.api_update_booking_status, name='api-update-booking'),
+    path('api/ceo-approval/<int:booking_id>/', views.api_ceo_approval, name='api-ceo-approval'),
+    path('api/principal-approval/<int:booking_id>/', views.api_principal_approval, name='api-principal-approval'),
+    # Profile URLs
+    path('api/get-profile/', views.api_get_profile, name='api-get-profile'),
+    path('api/update-profile/', views.api_update_profile, name='api-update-profile'),
+    path('api/upload-profile-image/', views.api_upload_profile_image, name='api-upload-profile-image'),
     path('logout/', views.logout_view, name='logout'),
     path('mybooking/', views.my_bookings, name='mybooking'),
     path('booking-details/<int:booking_id>/', views.booking_details_view, name='booking-details'),

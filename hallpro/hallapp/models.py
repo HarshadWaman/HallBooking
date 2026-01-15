@@ -9,9 +9,24 @@ class User(AbstractUser):
         ('user', 'User'),
         ('admin', 'Admin'),
     )
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+    )
     user_type = models.CharField(max_length=10, choices=USER_TYPES, default='user')
     department = models.CharField(max_length=100, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+    
+    # Profile fields
+    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
+    date_of_birth = models.DateField(blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    bio = models.TextField(max_length=500, blank=True, null=True, help_text="Brief introduction about yourself")
+    linkedin_url = models.URLField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)  # Allow null for existing users
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.username}"
@@ -97,6 +112,16 @@ class Booking(models.Model):
     approved_at = models.DateTimeField(null=True, blank=True)
     rejected_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='rejected_bookings')
     rejected_at = models.DateTimeField(null=True, blank=True)
+    
+    # CEO and Principal Approval Fields
+    ceo_approved = models.BooleanField(default=False)
+    ceo_approved_at = models.DateTimeField(null=True, blank=True)
+    ceo_pin = models.CharField(max_length=10, blank=True, null=True, help_text="CEO approval PIN")
+    
+    principal_approved = models.BooleanField(default=False)
+    principal_approved_at = models.DateTimeField(null=True, blank=True)
+    principal_pin = models.CharField(max_length=10, blank=True, null=True, help_text="Principal approval PIN")
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
