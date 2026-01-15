@@ -517,14 +517,17 @@
                         <th>Action</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="hallsTableBody">
                       {% for hall in halls %}
-                      <tr>
+                      <tr data-hall-id="{{ hall.id }}" data-hall-active="{{ hall.is_active }}">
                         <td>{{ hall.name }}</td>
                         <td>{{ hall.capacity }}</td>
                         <td>{{ hall.location }}</td>
-                        <td><span class="badge {% if hall.is_active %}bg-success{% else %}bg-secondary{% endif %}">{{
-                            hall.is_active|yesno:"Active,Inactive" }}</span></td>
+                        <td>
+                          <span class="badge {% if hall.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                            {% if hall.is_active %}Active{% else %}Inactive{% endif %}
+                          </span>
+                        </td>
                         <td>
                           <button class="btn btn-sm btn-info" onclick="editHall('{{ hall.id }}')"><i
                               class="fas fa-edit"></i> Edit</button>

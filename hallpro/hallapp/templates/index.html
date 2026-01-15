@@ -614,8 +614,11 @@
           {% endif %}
           <div class="hall-content">
             <h3 class="hall-name">{{ hall.name }}</h3>
-            <p class="hall-info"><strong>Capacity:</strong> {{ hall.capacity }} People<br><strong>Location:</strong> {{
-              hall.location }}<br><strong>Facilities:</strong> {{ hall.facilities }}</p>
+            <p class="hall-info">
+              <strong>Capacity:</strong> {{ hall.capacity }} People<br>
+              <strong>Location:</strong> {{ hall.location }}<br>
+              <strong>Facilities:</strong> {{ hall.facilities }}
+            </p>
             <button class="btn book-btn" onclick="bookHall('{{ hall.name }}')">Book Now</button>
           </div>
         </div>

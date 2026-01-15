@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/register/', views.api_register, name='api-register'),
     path('api/add-user/', views.api_add_user, name='api-add-user'),
     path('api/update-user/<int:user_id>/', views.api_update_user, name='api-update-user'),
+    path('api/delete-user/<int:user_id>/', views.api_delete_user, name='api-delete-user'),
     path('api/booking-details/<int:booking_id>/', views.api_booking_details, name='api-booking-details'),
     path('api/booking-status/<int:booking_id>/', views.api_booking_status, name='api-booking-status'),
     path('api/cancel-booking/<int:booking_id>/', views.api_cancel_booking, name='api-cancel-booking'),

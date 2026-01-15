@@ -148,6 +148,11 @@ STATICFILES_DIRS = [
     BASE_DIR / "hallapp" / "static",
 ]
 
+# Authentication Settings
+LOGIN_URL = 'landing'
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'index'
+
 
 
 # CSRF and Security Settings

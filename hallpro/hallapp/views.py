@@ -360,6 +360,24 @@ def api_update_hall(request, hall_id):
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 @ensure_csrf_cookie
+def api_delete_user(request, user_id):
+    """Handle user deletion by admin"""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'})
+    
+    if request.method == "DELETE":
+        try:
+            user = User.objects.get(id=user_id)
+            user.delete()
+            return JsonResponse({'success': True, 'message': 'User deleted successfully!'})
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'User not found.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error deleting user: {str(e)}'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+@ensure_csrf_cookie
 def api_delete_booking(request, booking_id):
     """Handle permanent booking deletion by admin"""
     if not request.session.get('is_admin'):
