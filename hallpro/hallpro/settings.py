@@ -83,15 +83,19 @@ WSGI_APPLICATION = 'hallpro.wsgi.application'
 
 
 # Database configuration
-database_url = os.environ.get('DATABASE_URL')
 
-if database_url:
-    # Production: Use DATABASE_URL
+
+# Check if DATABASE_URL exists (on Render) or use SQLite (locally)
+if 'DATABASE_URL' in os.environ:
     DATABASES = {
-        'default': dj_database_url.parse(database_url)
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
 else:
-    # Local development: Use SQLite
+    # Local development fallback
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
