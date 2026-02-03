@@ -15,13 +15,17 @@ HARDCODED_ADMINS = [
     {'username': 'nayan', 'password': 'nayan2105', 'email': 'nayanpatilnp11@gmail.com', 'name': 'Nayan'},
 ]
 
+# Hardcoded CEO and Principal PINs
+CEO_PIN = '1234'
+PRINCIPAL_PIN = '5678'
+
 # ===========================
 # Public Pages
 # ===========================
 
 def index(request):
-    # Fetch all halls to display on homepage (no status filtering)
-    halls = Hall.objects.all()
+    # Fetch active halls to display on homepage
+    halls = Hall.objects.filter(is_active=True)
     return render(request, 'index.html', {'halls': halls})
 
 # ===========================
@@ -341,6 +345,7 @@ def api_update_hall(request, hall_id):
         name = data.get('name')
         capacity = data.get('capacity')
         location = data.get('location')
+        is_active = data.get('is_active')
         
         if not name or not capacity or not location:
             return JsonResponse({'success': False, 'message': 'All required fields must be provided'})
@@ -349,10 +354,30 @@ def api_update_hall(request, hall_id):
             hall.name = name
             hall.capacity = int(capacity)
             hall.location = location
+            if is_active is not None:
+                hall.is_active = is_active
             hall.save()
             return JsonResponse({'success': True, 'message': 'Hall updated successfully!'})
         except Exception as e:
             return JsonResponse({'success': False, 'message': f'Error updating hall: {str(e)}'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+@ensure_csrf_cookie
+def api_delete_user(request, user_id):
+    """Handle user deletion by admin"""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'})
+    
+    if request.method == "DELETE":
+        try:
+            user = User.objects.get(id=user_id)
+            user.delete()
+            return JsonResponse({'success': True, 'message': 'User deleted successfully!'})
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'User not found.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error deleting user: {str(e)}'})
     
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
@@ -412,16 +437,48 @@ def api_update_booking_status(request, booking_id):
         data = json.loads(request.body)
         status = data.get('status')
         
-        if status in ['APPROVED', 'REJECTED']:
+        if status in ['APPROVED', 'REJECTED', 'PENDING']:
             booking.status = status
             if status == 'APPROVED':
                 booking.approved_at = timezone.now()
+                # Auto-approve CEO and Principal when admin approves
+                # This ensures signatures show in booking details
+                booking.ceo_approved = True
+                booking.ceo_approved_at = timezone.now()
+                booking.ceo_pin = CEO_PIN  # Store CEO PIN for verification
+                booking.principal_approved = True
+                booking.principal_approved_at = timezone.now()
+                booking.principal_pin = PRINCIPAL_PIN  # Store Principal PIN for verification
             elif status == 'REJECTED':
                 booking.rejected_at = timezone.now()
                 booking.rejection_reason = data.get('reason', '')
+                # Reset CEO and Principal approvals when rejected
+                booking.ceo_approved = False
+                booking.ceo_approved_at = None
+                booking.ceo_pin = None
+                booking.principal_approved = False
+                booking.principal_approved_at = None
+                booking.principal_pin = None
+            elif status == 'PENDING':
+                # Reset all approval fields when reset to PENDING
+                booking.approved_at = None
+                booking.rejected_at = None
+                booking.rejection_reason = ''
+                # Reset CEO and Principal approvals
+                booking.ceo_approved = False
+                booking.ceo_approved_at = None
+                booking.ceo_pin = None
+                booking.principal_approved = False
+                booking.principal_approved_at = None
+                booking.principal_pin = None
             booking.save()
             
-            action = 'approved' if status == 'APPROVED' else 'rejected'
+            if status == 'APPROVED':
+                action = 'approved'
+            elif status == 'REJECTED':
+                action = 'rejected'
+            else:
+                action = 'reset to pending'
             return JsonResponse({'success': True, 'message': f'Booking {action} successfully!'})
         else:
             return JsonResponse({'success': False, 'message': 'Invalid status.'})
@@ -496,7 +553,7 @@ def booking_view(request):
         except Hall.DoesNotExist:
             selected_hall = None
     
-    halls = Hall.objects.all()
+    halls = Hall.objects.filter(is_active=True)
     context = {
         'halls': halls,
         'selected_hall': selected_hall,
@@ -511,11 +568,137 @@ def my_bookings(request):
     bookings = Booking.objects.filter(user=request.user).order_by('-booking_date')
     return render(request, 'mybooking.html', {'bookings': bookings})
 
-# ===========================
-# Admin Dashboard
-# ===========================
+@ensure_csrf_cookie
+def api_update_profile(request):
+    """Handle profile update for both admin and users"""
+    # Check authentication for both regular users and admin users
+    is_authenticated = request.user.is_authenticated or request.session.get('is_admin')
+    if not is_authenticated:
+        return JsonResponse({'success': False, 'message': 'Authentication required'})
+    
+    if request.method == "POST":
+        try:
+            # For admin users, get user from session
+            if request.session.get('is_admin'):
+                admin_info = request.session.get('admin_user', {})
+                user = User.objects.filter(email=admin_info.get('email')).first()
+                if not user:
+                    return JsonResponse({'success': False, 'message': 'Admin user not found'})
+            else:
+                user = request.user
+            data = json.loads(request.body)
+            
+            # Update basic info
+            if 'first_name' in data:
+                user.first_name = data['first_name']
+            if 'last_name' in data:
+                user.last_name = data['last_name']
+            if 'email' in data and data['email'] != user.email:
+                # Check if email is already taken by another user
+                if User.objects.filter(email=data['email']).exclude(id=user.id).exists():
+                    return JsonResponse({'success': False, 'message': 'Email already exists.'})
+                user.email = data['email']
+            
+            # Update profile fields
+            if 'department' in data:
+                user.department = data['department']
+            if 'phone_number' in data:
+                user.phone_number = data['phone_number']
+            if 'gender' in data:
+                user.gender = data['gender']
+            if 'date_of_birth' in data and data['date_of_birth']:
+                from datetime import datetime
+                user.date_of_birth = datetime.strptime(data['date_of_birth'], '%Y-%m-%d').date()
+            if 'address' in data:
+                user.address = data['address']
+            if 'bio' in data:
+                user.bio = data['bio']
+            if 'linkedin_url' in data:
+                user.linkedin_url = data['linkedin_url']
+            
+            user.save()
+            return JsonResponse({'success': True, 'message': 'Profile updated successfully!'})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error updating profile: {str(e)}'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
-@login_required
+@ensure_csrf_cookie
+def api_get_profile(request):
+    """Get current user profile data"""
+    # Check authentication for both regular users and admin users
+    is_authenticated = request.user.is_authenticated or request.session.get('is_admin')
+    if not is_authenticated:
+        return JsonResponse({'success': False, 'message': 'Authentication required'})
+    
+    try:
+        # For admin users, get user from session
+        if request.session.get('is_admin'):
+            admin_info = request.session.get('admin_user', {})
+            user = User.objects.filter(email=admin_info.get('email')).first()
+            if not user:
+                return JsonResponse({'success': False, 'message': 'Admin user not found'})
+        else:
+            user = request.user
+        profile_data = {
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'user_type': user.user_type,
+            'department': user.department,
+            'phone_number': user.phone_number,
+            'gender': user.gender,
+            'date_of_birth': user.date_of_birth.strftime('%Y-%m-%d') if user.date_of_birth else '',
+            'address': user.address,
+            'bio': user.bio,
+            'linkedin_url': user.linkedin_url,
+            'profile_image_url': user.profile_image.url if user.profile_image else '',
+            'date_joined': user.date_joined.strftime('%d %b %Y'),
+            'last_login': user.last_login.strftime('%d %b %Y, %H:%M') if user.last_login else 'Never'
+        }
+        return JsonResponse({'success': True, 'profile': profile_data})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error fetching profile: {str(e)}'})
+
+@ensure_csrf_cookie
+def api_upload_profile_image(request):
+    """Handle profile image upload"""
+    # Check authentication for both regular users and admin users
+    is_authenticated = request.user.is_authenticated or request.session.get('is_admin')
+    if not is_authenticated:
+        return JsonResponse({'success': False, 'message': 'Authentication required'})
+    
+    if request.method == "POST":
+        try:
+            if 'profile_image' not in request.FILES:
+                return JsonResponse({'success': False, 'message': 'No image file provided'})
+            
+            # For admin users, get user from session
+            if request.session.get('is_admin'):
+                admin_info = request.session.get('admin_user', {})
+                user = User.objects.filter(email=admin_info.get('email')).first()
+                if not user:
+                    return JsonResponse({'success': False, 'message': 'Admin user not found'})
+            else:
+                user = request.user
+            # Delete old profile image if exists
+            if user.profile_image:
+                user.profile_image.delete(save=False)
+            
+            user.profile_image = request.FILES['profile_image']
+            user.save()
+            
+            profile_image_url = user.profile_image.url if user.profile_image else ''
+            return JsonResponse({'success': True, 'message': 'Profile image updated successfully!', 'profile_image_url': profile_image_url})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': f'Error uploading image: {str(e)}'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
 def booking_details_view(request, booking_id):
     """Display detailed booking information"""
     try:
@@ -523,12 +706,14 @@ def booking_details_view(request, booking_id):
         
         # Check if user is admin or the booking owner
         is_admin = request.session.get('is_admin')
-        is_owner = booking.user == request.user
+        is_owner = request.user.is_authenticated and booking.user == request.user
         
-        if not (is_admin or is_owner):
+        # Allow access if user is admin, booking owner, or if no user is logged in (public view)
+        # We'll show limited information for non-authenticated users
+        if not (is_admin or is_owner or not request.user.is_authenticated):
             return redirect('index')  # Unauthorized access
         
-        context = {'booking': booking}
+        context = {'booking': booking, 'is_admin': is_admin, 'is_owner': is_owner}
         return render(request, 'booking_details.html', context)
     except Booking.DoesNotExist:
         return redirect('index')  # Booking not found
@@ -541,9 +726,13 @@ def admin_dashboard(request):
     # Get admin info from session
     admin_info = request.session.get('admin_user', {})
     admin_name = admin_info.get('name', 'Admin')
+    admin_email = admin_info.get('email', '')
+    
+    # Get actual User model for profile image access
+    admin_user = User.objects.filter(email=admin_email).first()
     
     context = {
-        'admin': admin_info,
+        'admin': admin_user,  # Use actual User model instead of session dict
         'admin_name': admin_name,
         'total_halls': Hall.objects.count(),
         'total_bookings': Booking.objects.count(),
@@ -569,3 +758,67 @@ def admin_dashboard(request):
         'users': User.objects.all().order_by('-date_joined')
     }
     return render(request, 'admin.html', context)
+
+@ensure_csrf_cookie
+def api_ceo_approval(request, booking_id):
+    """Handle CEO approval with PIN verification"""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'})
+    
+    try:
+        booking = Booking.objects.get(id=booking_id)
+    except Booking.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Booking not found.'})
+    
+    if request.method == "POST":
+        data = json.loads(request.body)
+        pin = data.get('pin')
+        
+        if pin == CEO_PIN:
+            booking.ceo_approved = True
+            booking.ceo_approved_at = timezone.now()
+            booking.ceo_pin = pin  # Store the PIN for verification
+            
+            # Check if both CEO and Principal have approved
+            if booking.principal_approved:
+                booking.status = 'APPROVED'
+                booking.approved_at = timezone.now()
+            
+            booking.save()
+            return JsonResponse({'success': True, 'message': 'CEO approval successful!'})
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid CEO PIN.'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+@ensure_csrf_cookie
+def api_principal_approval(request, booking_id):
+    """Handle Principal approval with PIN verification"""
+    if not request.session.get('is_admin'):
+        return JsonResponse({'success': False, 'message': 'Unauthorized'})
+    
+    try:
+        booking = Booking.objects.get(id=booking_id)
+    except Booking.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Booking not found.'})
+    
+    if request.method == "POST":
+        data = json.loads(request.body)
+        pin = data.get('pin')
+        
+        if pin == PRINCIPAL_PIN:
+            booking.principal_approved = True
+            booking.principal_approved_at = timezone.now()
+            booking.principal_pin = pin  # Store the PIN for verification
+            
+            # Check if both CEO and Principal have approved
+            if booking.ceo_approved:
+                booking.status = 'APPROVED'
+                booking.approved_at = timezone.now()
+            
+            booking.save()
+            return JsonResponse({'success': True, 'message': 'Principal approval successful!'})
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid Principal PIN.'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})

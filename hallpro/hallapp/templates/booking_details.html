@@ -336,15 +336,25 @@
     <!-- Digital Signatures -->
     <div class="sig-container">
       <div class="sig-box">
-        {% if booking.status == 'APPROVED' %}
-        <div class="verified-stamp">Verified by Office</div>
+        {% if booking.ceo_approved %}
+        <div class="verified-stamp">CEO Approved</div>
+        <img src="/static/images/ceo_sign.jpeg" alt="CEO Signature" class="signature-image">
+        <div style="font-size: 11px; color: #059669; margin-bottom: 5px;">
+          {{ booking.ceo_approved_at|date:"d M Y, H:i" }}
+        </div>
+        {% else %}
+        <div style="height: 50px;"></div>
         {% endif %}
-        <div>मुख्य कार्यकारी अधिकारी, संस्था कार्यालय</div>
+        <div>मुख्य कार्यकारी अधिकारी (CEO)</div>
       </div>
 
       <div class="sig-box">
-        {% if booking.status == 'APPROVED' %}
-        <img src="/static/images/principal_sign.png" class="signature-image" alt="Principal Sign">
+        {% if booking.principal_approved %}
+        <div class="verified-stamp">Principal Approved</div>
+        <img src="/static/images/principal_sign.jpeg" alt="Principal Signature" class="signature-image">
+        <div style="font-size: 11px; color: #059669; margin-bottom: 5px;">
+          {{ booking.principal_approved_at|date:"d M Y, H:i" }}
+        </div>
         {% else %}
         <div style="height: 50px;"></div>
         {% endif %}

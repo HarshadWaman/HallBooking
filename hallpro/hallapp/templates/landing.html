@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Register</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css rel=stylesheet>
     <style>
         body {
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
@@ -42,6 +43,13 @@
             transition: all 0.3s;
             color: #6c757d;
         }
+
+        .tab-btn.admin-active {
+            background: white;
+            color: #dc3545;
+            border-bottom: 3px solid #dc3545;
+        }
+
 
         .tab-btn.active {
             background: white;
@@ -129,7 +137,8 @@
 <body>
     <div class="auth-container">
         <div class="tab-buttons">
-            <button class="tab-btn active" id="login-tab-btn" onclick="switchTab('login')">Login</button>
+            <button class="tab-btn active" id="login-tab-btn" onclick="switchTab('login')">User Login</button>
+            <button class="tab-btn" id="admin-tab-btn" onclick="switchTab('admin')">Admin Login</button>
             <button class="tab-btn" id="register-tab-btn" onclick="switchTab('register')">Register</button>
         </div>
 
@@ -154,6 +163,25 @@
                             placeholder="Enter your password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+
+            <!-- Admin Login Form -->
+            <div id="admin-form" class="form-content">
+                <h3 class="mb-4 text-center">Admin Access</h3>
+                <form onsubmit="handleAdminLogin(event)">
+                    <input type="hidden" id="admin-usertype" value="admin">
+                    <div class="mb-3">
+                        <label for="admin-email" class="form-label">Admin Email</label>
+                        <input type="email" class="form-control" id="admin-email" placeholder="Enter admin email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="admin-password" class="form-label">Admin Password</label>
+                        <input type="password" class="form-control" id="admin-password" placeholder="Enter admin password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                        <i class="fas fa-user-shield me-2"></i>Login to Admin Panel
+                    </button>
                 </form>
             </div>
 
@@ -215,20 +243,28 @@
 
         function switchTab(tab) {
             const loginForm = document.getElementById('login-form');
+            const adminForm = document.getElementById('admin-form');
             const registerForm = document.getElementById('register-form');
             const loginTab = document.getElementById('login-tab-btn');
+            const adminTab = document.getElementById('admin-tab-btn');
             const registerTab = document.getElementById('register-tab-btn');
 
             loginTab.classList.remove('active');
+            adminTab.classList.remove('active');
             registerTab.classList.remove('active');
+
+            loginForm.classList.remove('active');
+            adminForm.classList.remove('active');
+            registerForm.classList.remove('active');
 
             if (tab === 'login') {
                 loginForm.classList.add('active');
-                registerForm.classList.remove('active');
                 loginTab.classList.add('active');
+            } else if (tab === 'admin') {
+                adminForm.classList.add('active');
+                adminTab.classList.add('admin-active');
             } else {
                 registerForm.classList.add('active');
-                loginForm.classList.remove('active');
                 registerTab.classList.add('active');
             }
 
@@ -316,6 +352,42 @@
                         setTimeout(() => switchTab('login'), 2000);
                     } else {
                         showMessage(data.message, 'warning');
+                    }
+                })
+                .catch(error => {
+                    showMessage('An error occurred. Please try again.', 'danger');
+                    console.error('Error:', error);
+                });
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+
+            const userType = document.getElementById('admin-usertype').value;
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+
+            fetch('/api/admin-login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    userType: userType,
+                    email: email,
+                    password: password
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage('Admin login successful! Redirecting to admin dashboard...', 'success');
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 1500);
+                    } else {
+                        showMessage(data.message || 'Invalid admin credentials', 'danger');
                     }
                 })
                 .catch(error => {
