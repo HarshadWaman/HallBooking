@@ -726,9 +726,13 @@ def admin_dashboard(request):
     # Get admin info from session
     admin_info = request.session.get('admin_user', {})
     admin_name = admin_info.get('name', 'Admin')
+    admin_email = admin_info.get('email', '')
+    
+    # Get actual User model for profile image access
+    admin_user = User.objects.filter(email=admin_email).first()
     
     context = {
-        'admin': admin_info,
+        'admin': admin_user,  # Use actual User model instead of session dict
         'admin_name': admin_name,
         'total_halls': Hall.objects.count(),
         'total_bookings': Booking.objects.count(),
